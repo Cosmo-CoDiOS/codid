@@ -11,6 +11,9 @@ authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
 keywords = ["cover-display", "codi"]
 edition = "2018"
 
+[[bin]]
+name = "codi-linuxd"
+
 [dependencies]
 glib = "0.10.3"
 serialport = "3.3.0"
