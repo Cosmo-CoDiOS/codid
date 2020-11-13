@@ -63,6 +63,7 @@ jobs:
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ matrix.release_name }}-release
           path: ./rust/${{ matrix.artifact_name }}/release/codi-linuxd
