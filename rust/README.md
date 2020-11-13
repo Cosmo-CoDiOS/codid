@@ -5,7 +5,7 @@
 This is the Rust implementation.
 
 The idea is for a cross-platform implementation, that can run on Gemian, Sailfish, and UBPorts.
-This can be achieved with a modular approach, with a statically link musl binary.
+This can be achieved with a modular approach, with a statically linked musl binary.
 
 ## License
 
