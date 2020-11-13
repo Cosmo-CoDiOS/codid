@@ -1,7 +1,7 @@
 [package]
 name = "codi-linuxd"
 publish = false
-license = ["MIT OR Apache-2.0"]
+license = "MIT OR Apache-2.0"
 readme = "/rust/README.md"
 repository = "https://github.com/shymega/cosmo-codi-linux"
 description = "Rust implementation of the CoDi interface for Linux"
