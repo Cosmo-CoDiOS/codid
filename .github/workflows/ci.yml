@@ -59,7 +59,7 @@ jobs:
           command: build
           args: --locked --target=${{ matrix.target }}
           use-cross: ${{ matrix.cross }}
-          working-directory: ./rus
+          working-directory: ./rust
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v2
