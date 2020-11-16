@@ -140,7 +140,7 @@ pub enum ProtocolCommands {
     CMD_ST_ENTRY_DEEP_SLEEP_STATUS = 145,
 }
 
-/// New experiment protocol, more soon.
+/// New experimental protocol, more soon.
 #[cfg(feature = "codirs")]
 #[allow(missing_docs)]
 pub enum ProtocolCommands {
