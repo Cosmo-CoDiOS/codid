@@ -1,4 +1,6 @@
 //! This module holds various bits and pieces for the `codi-linuxd` daemon to run.
+#![feature(const_fn)]
+#![feature(const_fn_transmute)]
 #![deny(
     missing_copy_implementations,
     missing_debug_implementations,
@@ -9,7 +11,6 @@
     trivial_casts,
     trivial_numeric_casts,
     unsafe_code,
-    unstable_features,
     unused_import_braces,
     unused_qualifications,
     unused_extern_crates,
@@ -17,3 +18,4 @@
 )]
 
 pub mod protocol;
+pub(crate) mod packer;
