@@ -2,6 +2,17 @@
 
 set -eu
 
+echo "Downloading required Docker images for cross-compiling.."
+echo "(musl)"
+docker pull shymega/rust-cross-custom:aarch64-unknown-linux-musl-0.2.1
+echo "(musl done)"
+
+echo "(glibc)"
+docker pull shymega/rust-cross-custom:aarch64-unknown-linux-gnu-0.2.1
+echo "(glibc done)"
+
+echo "Download complete."
+
 echo "Building aarch64-unknown-linux-musl.."
 
 echo "Debug build in progress.."
