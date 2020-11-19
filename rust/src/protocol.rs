@@ -3,6 +3,7 @@
 // Protocol docs to be added later - `non_camel_case_types` lint must remain allowed.
 #[allow(missing_docs, non_camel_case_types, dead_code)]
 #[derive(Debug, Copy, Clone)]
+/// This holds an enum of the protocol used to communicate with the Cover Display.
 pub enum Commands {
     CMD_MTK_GET_PROTOCOL_VERSION = 0,
     CMD_MTK_GET_CODI_FLASH_VERSION = 1,
