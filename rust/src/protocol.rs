@@ -1,4 +1,4 @@
-//! This module specifies the protocol uses by the Mediatek chip and CoDi chip.
+//! This module specifies the protocol uses by the Mediatek chip and `CoDi` chip.
 
 // Protocol docs to be added later - `non_camel_case_types` lint must remain allowed.
 #[allow(missing_docs, non_camel_case_types)]
