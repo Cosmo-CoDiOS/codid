@@ -16,7 +16,6 @@ name = "codi-linuxd"
 
 [features]
 default = []
-codirs = []
 
 [dependencies]
 glib = "0.10.3"

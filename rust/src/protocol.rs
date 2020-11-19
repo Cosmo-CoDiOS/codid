@@ -3,7 +3,6 @@
 // Protocol docs to be added later - `non_camel_case_types` lint must remain allowed.
 #[allow(missing_docs, non_camel_case_types)]
 #[derive(Debug, Copy, Clone)]
-#[cfg(not(feature = "codirs"))]
 pub enum ProtocolCommands {
     CMD_MTK_GET_PROTOCOL_VERSION = 0,
     CMD_MTK_GET_CODI_FLASH_VERSION = 1,
@@ -138,10 +137,4 @@ pub enum ProtocolCommands {
     CMD_SYNC_SYS_SLEEP_STATUS = 143,
     CMD_SYNC_RIGHT_USB_OTG_STATUS = 144,
     CMD_ST_ENTRY_DEEP_SLEEP_STATUS = 145,
-}
-
-/// New experimental protocol, more soon.
-#[cfg(feature = "codirs")]
-#[allow(missing_docs)]
-pub enum ProtocolCommands {
 }
