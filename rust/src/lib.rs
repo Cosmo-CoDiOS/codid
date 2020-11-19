@@ -17,5 +17,5 @@
     variant_size_differences
 )]
 
-pub mod protocol;
 pub(crate) mod packer;
+pub(crate) mod protocol;
