@@ -30,7 +30,7 @@ features = ["full"]
 
 [profile.dev]
 lto = true
-opt-level = "s"
+opt-level = "z"
 codegen-units = 1
 debug = false
 
@@ -41,7 +41,7 @@ debug = false
 
 [profile.release]
 lto = true
-opt-level = "s"
+opt-level = "z"
 codegen-units = 1
 debug = false
 
