@@ -1,7 +1,7 @@
 //! This module specifies the protocol uses by the Mediatek chip and `CoDi` chip.
 
 // Protocol docs to be added later - `non_camel_case_types` lint must remain allowed.
-#[allow(missing_docs, non_camel_case_types)]
+#[allow(missing_docs, non_camel_case_types, dead_code)]
 #[derive(Debug, Copy, Clone)]
 pub enum ProtocolCommands {
     CMD_MTK_GET_PROTOCOL_VERSION = 0,
