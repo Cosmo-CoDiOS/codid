@@ -24,23 +24,25 @@ use std::time::Duration;
 /// We had to put this in a function because `hex::decode(T)` can't be called from a const context.
 #[allow(dead_code)]
 fn get_codi_msg_header() -> Vec<u8> {
-    hex::decode("58 21 58 21")
-        .unwrap()
+    hex::decode("58 21 58 21").unwrap()
 }
 
 #[allow(dead_code)]
 fn process_serial() {
-    let mut serial = open_port("/dev/ttyS1")
-        .unwrap();
+    let mut serial = open_port("/dev/ttyS1").unwrap();
 
     loop {
         let mut buf: [u8; 300] = [0; 300]; // should this be 299?
-        serial.read_exact(&mut buf).expect("Failed to read bytes from CoDi.");
+        serial
+            .read_exact(&mut buf)
+            .expect("Failed to read bytes from CoDi.");
 
         if buf.len() >= 4 {
             println!("Found the header!");
             let mut msg_size: [u8; 4] = [0; 4];
-            serial.read_exact(&mut msg_size).expect("Failed to read message size header from CoDi.");
+            serial
+                .read_exact(&mut msg_size)
+                .expect("Failed to read message size header from CoDi.");
         }
     }
 }
