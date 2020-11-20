@@ -28,12 +28,12 @@ fn get_codi_msg_header() -> Vec<u8> {
         .unwrap()
 }
 
+#[allow(dead_code)]
 fn process_serial() {
     let mut serial = open_port("/dev/ttyS1")
         .unwrap();
 
     loop {
-        let header = get_codi_msg_header();
         let mut buf: [u8; 300] = [0; 300]; // should this be 299?
         serial.read_exact(&mut buf).expect("Failed to read bytes from CoDi.");
 
