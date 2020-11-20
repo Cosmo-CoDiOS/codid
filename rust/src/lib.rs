@@ -19,3 +19,4 @@
 
 pub(crate) mod packer;
 pub(crate) mod protocol;
+pub(crate) mod serial_port;
