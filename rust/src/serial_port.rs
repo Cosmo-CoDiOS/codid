@@ -33,11 +33,11 @@ fn process_serial() {
 
     loop {
         let mut buf: [u8; 300] = [0; 300]; // should this be 299?
-        serial
+        serial // this isn't right
             .read_exact(&mut buf)
             .expect("Failed to read bytes from CoDi.");
 
-        if buf.len() >= 4 {
+        if buf.len() >= 4 { // nor is this
             println!("Found the header!");
             let mut msg_size: [u8; 4] = [0; 4];
             serial
