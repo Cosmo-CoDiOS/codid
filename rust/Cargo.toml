@@ -1,0 +1,53 @@
+[package]
+name = "codi-linuxd"
+publish = false
+license = "MIT OR Apache-2.0"
+readme = "/rust/README.md"
+repository = "https://github.com/shymega/cosmo-codi-linux"
+description = "Rust implementation of the CoDi interface for Linux"
+categories = ["cover-display", "codi"]
+version = "0.1.0"
+authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
+keywords = ["cover-display", "codi"]
+edition = "2018"
+
+[[bin]]
+name = "codi-linuxd"
+
+[features]
+default = []
+
+[dependencies]
+glib = "0.10.3"
+serialport = "3.3.0"
+dbus = "0.9.0"
+dbus-tokio = "0.6.0"
+restruct_derive = "0.1.1"
+restruct = "0.1.1"
+hex = "0.4.2"
+
+[dependencies.tokio]
+version = "0.2"
+features = ["full"]
+
+[profile.dev]
+lto = true
+opt-level = "z"
+codegen-units = 1
+debug = false
+
+[profile.dev.package."*"]
+codegen-units = 1
+opt-level = "z"
+debug = false
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
+debug = false
+
+[profile.release.package."*"]
+codegen-units = 1
+opt-level = "s"
+debug = false
