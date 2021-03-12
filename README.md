@@ -2,15 +2,21 @@
 
 ## About
 
-There are two implementations.
+This is the Rust implementation.
 
-The first, and original one is in the `/python` folder - see
-[here](/python/README.md) for the README.md of that implementation.
+The idea is for a cross-platform implementation, that can run on Gemian, Sailfish, and UBPorts.
+This can be achieved with a modular approach, with a statically linked musl binary.
 
-The Python implementation is kept for archival and reference purposes. It will
-have no further development in this repository.
+## License
 
-The second, and newer implementation is in the `/rust` folder - see
-[here](/rust/README.md) for the README.md of that implementation.
+Licensed under either of:
 
-The Rust implementation is being developed actively.
+* [Apache License][apache], Version 2.0
+* [MIT license][mit]
+
+at your option.
+
+NOTE: This license does NOT apply to the Python implementation - only the Rust implementation.
+
+[apache]: /LICENSE-APACHE
+[mit]: /LICENSE-MIT

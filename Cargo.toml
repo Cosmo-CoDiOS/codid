@@ -25,6 +25,7 @@ dbus-tokio = "0.6.0"
 restruct_derive = "0.1.1"
 restruct = "0.1.1"
 hex = "0.4.2"
+slog = "*"
 
 [dependencies.tokio]
 version = "0.2"
