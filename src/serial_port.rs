@@ -15,9 +15,9 @@
     variant_size_differences
 )]
 
-use serialport::open_with_settings;
-use serialport::prelude::*;
 use serialport::Error;
+use serialport::{DataBits, FlowControl, Parity, SerialPort, StopBits};
+use std::io::Read;
 use std::time::Duration;
 
 /// Returns the CoDi header magic number.
@@ -37,7 +37,8 @@ fn process_serial() {
             .read_exact(&mut buf)
             .expect("Failed to read bytes from CoDi.");
 
-        if buf.len() >= 4 { // nor is this
+        if buf.len() >= 4 {
+            // nor is this
             println!("Found the header!");
             let mut msg_size: [u8; 4] = [0; 4];
             serial
@@ -50,14 +51,14 @@ fn process_serial() {
 /// This function opens a serial connection to `CoDi`.
 #[allow(dead_code)]
 pub(crate) fn open_port(port: &str) -> Result<Box<dyn SerialPort>, Error> {
-    let s = SerialPortSettings {
-        baud_rate: 115_200,
-        data_bits: DataBits::Eight,
-        flow_control: FlowControl::None,
-        parity: Parity::None,
-        stop_bits: StopBits::One,
-        timeout: Duration::from_millis(1),
-    };
+    let s = serialport::new(port, 115_200)
+        .data_bits(DataBits::Eight)
+        .flow_control(FlowControl::None)
+        .stop_bits(StopBits::One)
+        .timeout(Duration::from_millis(10))
+        .parity(Parity::None)
+        .open()
+        .expect("Serial port failed to open!");
 
-    open_with_settings(port, &s)
+    Ok(s)
 }
