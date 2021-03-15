@@ -23,11 +23,11 @@ extern crate slog;
 #[derive(Debug)]
 pub struct State {
     pub cfg: config::Config,
-    pub log: slog::Logger
+    pub log: slog::Logger,
 }
 
+pub mod daemon;
+pub mod logging;
 pub(crate) mod packer;
 pub(crate) mod protocol;
 pub(crate) mod serial_port;
-pub mod logging;
-pub mod daemon;
