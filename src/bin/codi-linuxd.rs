@@ -78,11 +78,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let log = setup_logging(min_log_level);
 
     /* load config file */
-    let default_cfg_path = format!("{}/.config/codi-linuxd/config.toml", env!("HOME"))
-        .clone();
+    let default_cfg_path =
+        format!("{}/.config/codi-linuxd/config.toml", env!("HOME")).clone();
 
-    let cfg_path = matches.value_of("config")
-        .unwrap_or(&default_cfg_path);
+    let cfg_path = matches.value_of("config").unwrap_or(&default_cfg_path);
 
     let cfg = load_config(cfg_path.clone()).unwrap();
 
