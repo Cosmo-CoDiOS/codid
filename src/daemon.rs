@@ -5,7 +5,7 @@ use super::State;
 /// Daemon entrypoint
 pub async fn start(state: State) {
     let log = state.log;
-    let _cfg = state.cfg;
+    let cfg = state.cfg;
 
     debug!(log, "Daemon initialising");
     debug!(log, "Daemon initialised");
