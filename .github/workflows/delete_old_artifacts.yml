@@ -1,7 +1,7 @@
 name: 'Delete old artifacts (3 weeks)'
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 1'
 
 jobs:
   delete-artifacts:
