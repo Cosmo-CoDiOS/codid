@@ -37,7 +37,7 @@ jobs:
       - name: Setup Cargo binary caching/installation action
         uses: actions-rs/install@v0.1
         with:
-          crate: use-cross
+          crate: cross
           version: latest
 
       - name: Setup Rust toolchain
