@@ -175,6 +175,7 @@ dependencies = [
  "restruct",
  "restruct_derive",
  "serialport",
+ "slog",
  "slog-async",
  "slog-term",
  "tokio",
