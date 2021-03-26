@@ -46,16 +46,6 @@ jobs:
           toolchain: nightly-2020-11-08
           target: ${{ matrix.target }}
 
-      - name: Cache Cargo binaries
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ~/.cargo/bin
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Build project in release mode
         uses: marcopolo/cargo@master
         if: startsWith(github.ref, 'refs/tags/')
