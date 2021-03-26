@@ -34,6 +34,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup Cargo binary caching/installation action
+        with:
+          crate: use-cross
+          version: latest
+
       - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
