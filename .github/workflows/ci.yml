@@ -33,13 +33,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-    
+
+      - name: Setup Cargo binary caching/installation action
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+
       - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-2020-11-08
           target: ${{ matrix.target }}
-      
+
       - name: Build project in release mode
         uses: marcopolo/cargo@master
         if: startsWith(github.ref, 'refs/tags/')
