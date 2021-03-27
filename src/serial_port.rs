@@ -1,24 +1,25 @@
 //! Module for interfacing with `CoDi` over serial.
 #![deny(
-    missing_copy_implementations,
-    missing_debug_implementations,
-    missing_docs,
-    clippy::all,
-    clippy::pedantic,
-    clippy::cargo,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unused_import_braces,
-    unused_qualifications,
-    unused_extern_crates,
-    variant_size_differences
+missing_copy_implementations,
+missing_debug_implementations,
+missing_docs,
+clippy::all,
+clippy::pedantic,
+clippy::cargo,
+trivial_casts,
+trivial_numeric_casts,
+unsafe_code,
+unused_import_braces,
+unused_qualifications,
+unused_extern_crates,
+variant_size_differences
 )]
 
-use serialport::Error;
-use serialport::{DataBits, FlowControl, Parity, SerialPort, StopBits};
 use std::io::Read;
 use std::time::Duration;
+
+use serialport::{DataBits, FlowControl, Parity, SerialPort, StopBits};
+use serialport::Error;
 
 /// Returns the CoDi header magic number.
 /// We had to put this in a function because `hex::decode(T)` can't be called from a const context.

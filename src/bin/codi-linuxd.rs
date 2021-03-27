@@ -1,34 +1,32 @@
 //! Main executable for the `codi-linuxd` daemon.
 #![deny(
-    missing_copy_implementations,
-    missing_debug_implementations,
-    missing_docs,
-    clippy::all,
-    clippy::pedantic,
-    clippy::cargo,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unstable_features,
-    unused_import_braces,
-    unused_qualifications,
-    unused_extern_crates,
-    variant_size_differences
+missing_copy_implementations,
+missing_debug_implementations,
+missing_docs,
+clippy::all,
+clippy::pedantic,
+clippy::cargo,
+trivial_casts,
+trivial_numeric_casts,
+unsafe_code,
+unstable_features,
+unused_import_braces,
+unused_qualifications,
+unused_extern_crates,
+variant_size_differences
 )]
 
+use std::env;
+use std::error::Error;
+
 use clap::{App, Arg, ArgMatches};
+use config::Config;
+use futures::executor::block_on;
+use slog::{debug, trace};
 
 use codi_linuxd::daemon::start;
 use codi_linuxd::logging::setup_logging;
 use codi_linuxd::State;
-
-use config::Config;
-use futures::executor::block_on;
-
-use slog::{debug, trace};
-
-use std::env;
-use std::error::Error;
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 

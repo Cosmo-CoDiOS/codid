@@ -1,6 +1,6 @@
 //! This is the logging module for `codi-linuxd`.
 
-use slog::{o, Drain, Level, LevelFilter, Logger};
+use slog::{Drain, Level, LevelFilter, Logger, o};
 use slog_async::Async;
 
 /// Derived from GitHub repo `leftwm/leftwm` (TODO: Make this a link)
