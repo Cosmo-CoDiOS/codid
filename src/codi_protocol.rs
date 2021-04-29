@@ -1,19 +1,4 @@
 //! This module specifies the protocol uses by the Mediatek chip and `CoDi` chip.
-#![deny(
-missing_copy_implementations,
-missing_debug_implementations,
-missing_docs,
-clippy::all,
-clippy::pedantic,
-clippy::cargo,
-trivial_casts,
-trivial_numeric_casts,
-unsafe_code,
-unused_import_braces,
-unused_qualifications,
-unused_extern_crates,
-variant_size_differences
-)]
 
 // Protocol docs to be added later - `non_camel_case_types` lint must remain allowed.
 #[allow(missing_docs, non_camel_case_types, dead_code)]

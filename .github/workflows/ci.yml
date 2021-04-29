@@ -1,4 +1,4 @@
-name: cosmo-codi-linuxd builder workflow
+name: cosmo-codi-d builder workflow
 
 on: [push, pull_request]
 
@@ -19,14 +19,14 @@ jobs:
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             artifact_name: target/aarch64-unknown-linux-musl
-            release_name: cosmo-linuxd-aarch64-musl
+            release_name: cosmo-codi-d-aarch64-musl
             cross: true
             strip: true
 
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             artifact_name: target/aarch64-unknown-linux-gnu
-            release_name: cosmo-linuxd-aarch64-gnu
+            release_name: cosmo-codi-d-aarch64-gnu
             cross: true
             strip: true
 
@@ -76,18 +76,18 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ matrix.release_name }}-release
-          path: ./${{ matrix.artifact_name }}/release/codi-linuxd
+          path: ./${{ matrix.artifact_name }}/release/cosmo-codi-d
 
       - name: Upload debug artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.release_name }}-debug
-          path: ./${{ matrix.artifact_name }}/debug/codi-linuxd
+          path: ./${{ matrix.artifact_name }}/debug/cosmo-codi-d
 
-      - name: Create release for cosmo-codi-linuxd
+      - name: Create release for cosmo-codi-d
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./${{ matrix.artifact_name }}/release/codi-linuxd
+          files: ./${{ matrix.artifact_name }}/release/cosmo-codi-d
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

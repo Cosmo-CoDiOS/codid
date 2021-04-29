@@ -1,11 +1,11 @@
-//! This is the module for the `codi-linuxd` daemon.
+//! This is the module for the `cosmo-codi-d` daemon.
 
 use super::State;
 
 /// Daemon entrypoint
 pub async fn start(state: State) {
     let log = state.log;
-    let cfg = state.cfg;
+    let _cfg = state.cfg; /* not used yet */
 
     debug!(log, "Daemon initialising");
     debug!(log, "Daemon initialised");
