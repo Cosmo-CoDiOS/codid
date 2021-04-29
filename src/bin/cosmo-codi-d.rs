@@ -54,7 +54,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let matches = get_args()
         .expect("ERROR: Failed to get CLI arguments, this is bad!");
 
-
     let min_log_level = match matches.occurrences_of("verbose") {
         0 => slog::Level::Info,
         1 => slog::Level::Debug,
@@ -63,7 +62,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let log = setup_logging(min_log_level)
         .expect("Could not setup logging.");
-
 
     /* load config file */
 
