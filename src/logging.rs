@@ -8,7 +8,7 @@ use std::error::Error;
 /// Derived from GitHub repo `leftwm/leftwm` (TODO: Make this a link)
 #[allow(clippy::module_name_repetitions)]
 #[must_use]
-pub fn setup_logging(level: Level) -> Result<Logger, Errorr> {
+pub fn setup_logging(level: Level) -> Result<Logger, Box<dyn Error>> {
     let decorator = slog_term::TermDecorator::new().build();
     let drain = slog_term::FullFormat::new(decorator).build().fuse();
     let drain = LevelFilter::new(drain, level).fuse();
