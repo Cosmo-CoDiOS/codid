@@ -53,6 +53,10 @@ features = ["max_level_trace"]
 version = "1.5.0"
 features = ["full"]
 
+[dependencies.txmodems]
+git = "https://github.com/shymega/txmodems"
+rev = "4e9ec0c0cc9c512da5b5f9133f51d30244096ce7"
+
 [profile.dev]
 lto = true
 opt-level = "z"
