@@ -1,4 +1,4 @@
-//! This is the logging module for `cosmo-codi-d`.
+//! This is the logging module for `codid`.
 
 use slog::{o, Drain, Level, LevelFilter, Logger};
 use slog_async::Async;

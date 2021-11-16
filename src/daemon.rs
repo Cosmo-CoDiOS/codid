@@ -1,4 +1,4 @@
-//! This is the module for the `cosmo-codi-d` daemon.
+//! This is the module for the `codid` daemon.
 
 use super::State;
 

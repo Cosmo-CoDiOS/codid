@@ -1,1 +1,1 @@
-//! RPC module for `cosmo-codi-d` clients.
+//! RPC module for `codid` clients.

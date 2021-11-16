@@ -1,4 +1,4 @@
-//! Main executable for the `cosmo-codi-d` daemon.
+//! Main executable for the `codid` daemon.
 
 use std::env;
 use std::error::Error;
@@ -8,9 +8,9 @@ use config::Config;
 use futures::executor::block_on;
 use slog::{debug, trace};
 
-use cosmo_codi_d::daemon::start;
-use cosmo_codi_d::logging::setup_logging;
-use cosmo_codi_d::State;
+use codid::daemon::start;
+use codid::logging::setup_logging;
+use codid::State;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -19,7 +19,7 @@ fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
     let cfg = Config::default()
         .merge(config::File::from(path))
         .unwrap()
-        .merge(config::Environment::with_prefix("COSMO_CODID"))
+        .merge(config::Environment::with_prefix("COSMO_CODID_CONFIG_PATH"))
         .unwrap()
         .clone();
 
@@ -27,9 +27,9 @@ fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
 }
 
 fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
-    let matches = App::new("cosmo-codi-d")
+    let matches = App::new("codid")
         .version(VERSION)
-        .author("The cosmo-codi-d Developers")
+        .author("The codid Developers")
         .about("Cross-platform interface to the Cosmo Communicator's cover display (CoDi)")
         .arg(Arg::with_name("config")
             .long("config")
