@@ -7,26 +7,18 @@ env:
 
 jobs:
   build:
-    name: Build for ${{ matrix.target }}
+    name: Builder for ${{ matrix.rom }}, with CoDi firmware ${{ matrix.firmware }} - for running on aarch64.
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target:
-          - aarch64-unknown-linux-musl
-          - aarch64-unknown-linux-gnu
-
+        rom: ["android", "gemian", "postmarketos", "sailfishos", "ubports"]
+        firmware: ["stock-codi", "codios-codi"]
         include:
           - os: ubuntu-latest
-            target: aarch64-unknown-linux-musl
-            artifact_name: target/aarch64-unknown-linux-musl
-            release_name: cosmo-codi-d-aarch64-musl
             cross: true
             strip: true
 
           - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            artifact_name: target/aarch64-unknown-linux-gnu
-            release_name: cosmo-codi-d-aarch64-gnu
             cross: true
             strip: true
 
@@ -43,22 +35,26 @@ jobs:
       - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2020-11-08
-          target: ${{ matrix.target }}
+          toolchain: nightly-2021-11-15
+          target: aarch64-unknown-linux-musl
 
-      - name: Build project in release mode
-        uses: marcopolo/cargo@master
+      - name: Build codid (musl/aarch64) in release mode
+        uses: actions-rs/cargo@master
+        env:
+          CARGO_TARGET_DIR: target/aarch64-unknown-linux-musl/${{ matrix.rom }}/${{ matrix.firmware }}
         if: startsWith(github.ref, 'refs/tags/')
         with:
           command: build
-          args: --release --all --locked --verbose --target=${{ matrix.target }}
+          args: --release --all --locked --verbose  --features=${{ matrix.firmware }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: ${{ matrix.cross }}
 
-      - name: Build project in debug mode
-        uses: marcopolo/cargo@master
+      - name: Build project (musl/aarch64) in debug mode
+        uses: actions-rs/cargo@master
+        env:
+          CARGO_TARGET_DIR: target/aarch64-unknown-linux-musl/${{ matrix.rom }}/${{ matrix.firmware }}
         with:
           command: build
-          args: --all --locked --verbose --target=${{ matrix.target }}
+          args: --all --locked --verbose  --features=${{ matrix.firmware }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: ${{ matrix.cross }}
 
       - name: 'Install (Cargo) binutils, if its release.'
@@ -71,23 +67,28 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: cargo strip --release -- --strip-all
 
-      - name: Upload release artifact
+      - name: Upload release artifact (daemon)
         uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: ${{ matrix.release_name }}-release
-          path: ./${{ matrix.artifact_name }}/release/cosmo-codi-d
+          name: codid-${{ matrix.rom }}--${{ matrix.firmware }}-debug
+          path: codid-${{ matrix.rom }}-${{ matrix.firmware }}-aarch64-unknown-linux-musl/release/codid
 
-      - name: Upload debug artifact
+      - name: Upload debug artifact (daemon)
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.release_name }}-debug
-          path: ./${{ matrix.artifact_name }}/debug/cosmo-codi-d
+          name: codid-${{ matrix.rom }}--${{ matrix.firmware }}-debug
+          path: codid-${{ matrix.rom }}-${{ matrix.firmware }}-aarch64-unknown-linux-musl/debug/codid
 
-      - name: Create release for cosmo-codi-d
-        uses: softprops/action-gh-release@v1
+      - name: Upload release artifact (ctl)
+        uses: actions/upload-artifact@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./${{ matrix.artifact_name }}/release/cosmo-codi-d
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: codictl-${{ matrix.rom }}-${{ matrix.firmware }}-${{ matrix.target}}
+          path: codid-${{ matrix.rom }}-${{ matrix.firmware }}-aarch64-unknown-linux-musl/release/codictl
+
+      - name: Upload debug artifact (ctl)
+        uses: actions/upload-artifact@v2
+        with:
+          name: codictl-${{ matrix.rom }}-${{ matrix.firmware }}-${{ matrix.target}}
+          path: codid-${{ matrix.rom }}-${{ matrix.firmware }}-aarch64-unknown-linux-musl/debug/codictl
