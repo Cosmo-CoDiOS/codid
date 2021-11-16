@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rom: ["android", "gemian", "postmarketos", "sailfishos", "ubports"]
+        rom: ["android", "gemian", "postmarketos", "sailfish", "ubports"]
         firmware: ["stock-codi", "codios-codi"]
         include:
           - os: ubuntu-latest
