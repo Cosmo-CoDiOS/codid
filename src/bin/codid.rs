@@ -43,7 +43,6 @@ fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
             .help("Verbosity level"))
         .subcommand(SubCommand::with_name("spawn")
                         .about("Starts the daemon"))
-
         .get_matches();
 
     Ok(matches.clone())
@@ -51,8 +50,8 @@ fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let matches = get_args()
-        .expect("ERROR: Failed to get CLI arguments, this is bad!");
+    let matches =
+        get_args().expect("ERROR: Failed to get CLI arguments, this is bad!");
 
     let min_log_level = match matches.occurrences_of("verbose") {
         0 => slog::Level::Info,
@@ -60,8 +59,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         _ => slog::Level::Trace,
     };
 
-    let log = setup_logging(min_log_level)
-        .expect("Could not setup logging.");
+    let log = setup_logging(min_log_level).expect("Could not setup logging.");
 
     /* load config file */
 
@@ -74,7 +72,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     /* Initialise state */
     let state: State = State {
         log: log.clone(),
-        cfg,
+        cfg: cfg.clone(),
     };
 
     trace!(

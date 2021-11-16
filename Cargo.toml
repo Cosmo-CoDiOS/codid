@@ -1,10 +1,10 @@
 [package]
-name = "cosmo-codi-d"
+name = "codid"
 publish = false
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/Gemian/cosmo-codi-d"
-description = "Rust implementation of the CoDi interface for Linux"
+repository = "https://github.com/Cosmo-CoDiOS/codid"
+description = "Rust implementation of the CoDi interface for Linux and Android based ROMs"
 categories = ["cover-display", "codi"]
 version = "0.1.0"
 authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
@@ -12,7 +12,7 @@ keywords = ["cover-display", "codi"]
 edition = "2018"
 
 [package.metadata.deb]
-name = "cosmo-codi-d"
+name = "codid"
 maintainer = "Dom Rodriguez <shymega@shymega.org.uk>"
 copyright = "2020-2021, Dom Rodriguez <shymega@shymega.org.uk>"
 license-file = ["LICENSE", "0"]
@@ -20,12 +20,20 @@ extended-description = "This is a Rust implementation of the CoDi interface for 
 depends = "$auto"
 section = "admin"
 priority = "optional"
-assets = [["README.md", "usr/share/doc/cosmo-codi-d/README.md", "644"],
-         ["target/release/cosmo-codi-d", "usr/bin/cosmo-codi-d", "755"],
-         ["assets/config.sample.toml", "usr/share/doc/cosmo-codi-d/config.sample.toml", "644"]]
+assets = [["README.md", "usr/share/doc/codid/README.md", "644"],
+         ["target/release/codid", "usr/bin/codid", "755"],
+         ["assets/config.sample.toml", "usr/share/doc/codid/config.sample.toml", "644"]]
+
 
 [[bin]]
-name = "cosmo-codi-d"
+name = "codid"
+
+[[bin]]
+name = "codidctl"
+
+[lib]
+name = "codid"
+path = "src/lib.rs"
 
 [features]
 default = []
