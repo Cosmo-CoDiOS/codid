@@ -37,21 +37,30 @@ path = "src/lib.rs"
 
 [features]
 default = []
-term = []
-journald = []
+stock-codi = ["codi_stock_proto"]
+codios-codi = ["codi_os_proto"]
+sailfish = ["dbus", "dbus-tokio"]
+android = []
+ubports = ["dbus", "dbus-tokio"]
+gemian = ["dbus", "dbus-tokio"]
+postmarketos = ["dbus", "dbus-tokio"]
 
 [dependencies]
 glib = "0.10.3"
 serialport = "4.0.1"
 futures = "0.3.15"
-dbus = "0.9.2"
+dbus = { version = "0.9.5", optional = true }
 config = "0.11.0"
-dbus-tokio = "0.7.3"
 restruct_derive = "0.1.1"
 restruct = "0.1.1"
+dbus-tokio = { version = "0.7.5", optional = true }
 clap = "2.33.3"
 slog-term = "2.8.0"
 slog-async = "2.6.0"
+
+[dependencies.dbus]
+version = "0.9.5"
+optional = true
 
 [dependencies.slog]
 version = "2.7.0"
@@ -64,6 +73,23 @@ features = ["full"]
 [dependencies.txmodems]
 git = "https://github.com/shymega/txmodems"
 rev = "4e9ec0c0cc9c512da5b5f9133f51d30244096ce7"
+[dependencies.dbus-tokio]
+version = "0.7.5"
+optional = true
+
+[dependencies.codi_os_proto]
+git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+branch = "main"
+optional = true
+
+[dependencies.codi_proto_common]
+git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+branch = "main"
+
+[dependencies.codi_stock_proto]
+git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+branch = "main"
+optional = true
 
 [profile.dev]
 lto = true
