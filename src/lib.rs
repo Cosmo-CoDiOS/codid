@@ -32,8 +32,5 @@ pub struct State {
 
 pub mod daemon;
 pub mod logging;
-pub(crate) mod packer;
-pub(crate) mod codi_protocol;
-pub(crate) mod serial_port;
 pub(crate) mod rpc;
 pub(crate) mod platforms;
