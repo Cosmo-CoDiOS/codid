@@ -29,7 +29,7 @@ assets = [["README.md", "usr/share/doc/codid/README.md", "644"],
 name = "codid"
 
 [[bin]]
-name = "codidctl"
+name = "codictl"
 
 [lib]
 name = "codid"

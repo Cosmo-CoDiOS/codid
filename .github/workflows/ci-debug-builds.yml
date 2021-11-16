@@ -1,0 +1,68 @@
+name: codid CI debug builds
+'on':
+  - push
+  - pull_request
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build-debug:
+    name: >-
+      Debug builder for Cosmo ROM: ${{ matrix.rom }}, CoDi firmware: ${{
+      matrix.codi }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rom:
+          - android
+          - gemian
+          - postmarketos
+          - sailfish
+          - ubports
+        codi:
+          - stock-codi
+          - codios-codi
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install musl tools
+        run: sudo apt-get install -y musl-tools
+      - name: Setup Cargo binary caching/installation action
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+          use-tool-cache: true
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+          target: aarch64-unknown-linux-musl
+          profile: minimal
+      - name: Build project (musl/aarch64) in debug mode
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: >-
+            --all --locked --verbose  --features=${{ matrix.firmware
+            }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
+          use-cross: true
+      - name: List files
+        run: find $GITHUB_WORKSPACE
+      - name: Display $GITHUB_WORKSPACE
+        run: env
+      - name: Upload debug artifact (daemon)
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'codid-${{ matrix.rom }}--${{ matrix.firmware }}-debug'
+          path: >-
+            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
+      - name: Upload debug artifact (ctl)
+        uses: actions/upload-artifact@v2
+        with:
+          name: >-
+            codictl-${{ matrix.rom }}-${{ matrix.firmware }}-${{
+            matrix.target}}-debug
+          path: >-
+            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl

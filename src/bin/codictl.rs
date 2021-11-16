@@ -9,7 +9,7 @@ use config::Config;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
-    let matches = App::new("codictl tool")
+    let matches = App::new("codictl")
         .version(VERSION)
         .author("The codid Developers")
         .about("Client to the codid server")
