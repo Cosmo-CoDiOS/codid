@@ -1,5 +1,3 @@
-#![feature(const_fn)]
-#![feature(const_fn_transmute)]
 //! This module holds various bits and pieces for the `codid` daemon to run.
 #![deny(
     missing_copy_implementations,
