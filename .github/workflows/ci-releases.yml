@@ -55,12 +55,11 @@ jobs:
             }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: true
       - name: Strip the CoDiOS image if the build is a release
-        run: cargo strip --release -- --strip-all
+        run: cargo strip --release --bin codid && cargo strip --release --bin codictl
       - name: Package Release
         shell: bash
         run: |
             tar -czvf codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz target/aarch64-unknown-linux-musl/debug/codid target/aarch64-unknown-linux-musl/debug/codictl
-
       - name: Publish release artifacts
         uses: softprops/action-gh-release@v1
         with:
