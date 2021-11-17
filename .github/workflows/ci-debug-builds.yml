@@ -48,11 +48,7 @@ jobs:
             --all --locked --verbose  --features=${{ matrix.firmware
             }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: true
-      - name: List files
-        run: find $GITHUB_WORKSPACE
-      - name: Display $GITHUB_WORKSPACE
-        run: env
-      - name: Upload debug artifact (daemon)
+      - name: Upload [debug] artifacts
         uses: actions/upload-artifact@v2
         with:
           name: 'codid-${{ matrix.rom }}--${{ matrix.firmware }}-debug'
