@@ -54,11 +54,6 @@ jobs:
             --all --release --locked --verbose  --features=${{ matrix.codi
             }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: true
-      - name: 'Install (Cargo) binutils, if the build is a release.'
-        run:
-          cargo install cargo-binutils && rustup component add
-          llvm-tools-preview
-
       - name: Strip the CoDiOS image if the build is a release
         run: cargo strip --release -- --strip-all
       - name: Package Release
