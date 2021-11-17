@@ -59,7 +59,7 @@ jobs:
       - name: Package Release
         shell: bash
         run: |
-            tar -czvf /home/runner/work/codid/codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
+            tar -czvf /home/runner/work/codid/codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codictl
       - name: Publish release artifacts
         uses: softprops/action-gh-release@v1
         with:
