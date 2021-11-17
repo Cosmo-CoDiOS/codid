@@ -42,6 +42,7 @@ jobs:
         with:
           toolchain: stable
           default: true
+          components: llvm-tools-preview
           override: true
           target: aarch64-unknown-linux-musl
           profile: minimal
