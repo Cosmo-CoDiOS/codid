@@ -9,7 +9,7 @@ categories = ["cover-display", "embedded", "planet-computers"]
 version = "0.1.0"
 authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
 keywords = ["cover-display", "codi", "planet-computers"]
-edition = "2018"
+edition = "2021"
 
 [package.metadata.deb]
 name = "codid"
