@@ -53,5 +53,5 @@ jobs:
         with:
           name: 'codid-${{ matrix.rom }}-${{ matrix.codi }}-debug'
           path: |
-            target/aarch64-unknown-linux-musl/debug/codid
-            target/aarch64-unknown-linux-musl/debug/codictl
+            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
+            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
