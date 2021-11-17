@@ -52,13 +52,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 'codid-${{ matrix.rom }}--${{ matrix.firmware }}-debug'
-          path: >-
+          path: |
             /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
-      - name: Upload debug artifact (ctl)
-        uses: actions/upload-artifact@v2
-        with:
-          name: >-
-            codictl-${{ matrix.rom }}-${{ matrix.firmware }}-${{
-            matrix.target}}-debug
-          path: >-
             /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
