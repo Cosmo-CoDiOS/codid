@@ -16,12 +16,13 @@ name = "codid"
 maintainer = "Dom Rodriguez <shymega@shymega.org.uk>"
 copyright = "2020-2021, Dom Rodriguez <shymega@shymega.org.uk>"
 license-file = ["LICENSE", "0"]
-extended-description = "This is a Rust implementation of the CoDi interface for Linux running on the Cosmo Communicator."
+extended-description = "Rust implementation of the CoDi interface for Linux and Android based ROMs"
 depends = "$auto"
 section = "admin"
 priority = "optional"
 assets = [["README.md", "usr/share/doc/codid/README.md", "644"],
-         ["target/release/codid", "usr/bin/codid", "755"],
+         ["target/aarch64-unknown-linux-musl/debug/codid", "/usr/bin/codid", "755"],
+         ["target/aarch64-unknown-linux-musl/debug/codictl", "/usr/bin/codictl", "755"],
          ["assets/config.sample.toml", "usr/share/doc/codid/config.sample.toml", "644"]]
 
 
