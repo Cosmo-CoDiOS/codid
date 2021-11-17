@@ -25,6 +25,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Install musl tools
         run: sudo apt-get install -y musl-tools
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          components: llvm-tools-preview
+          override: true
+          target: aarch64-unknown-linux-musl
+          profile: minimal
       - name: Install cargo-cross
         uses: actions-rs/install@v0.1
         with:
@@ -37,15 +46,6 @@ jobs:
             crate: cargo-binutils
             version: latest
             use-tool-cache: true
-      - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          components: llvm-tools-preview
-          override: true
-          target: aarch64-unknown-linux-musl
-          profile: minimal
       - name: Build project (musl/aarch64) in release mode
         uses: actions-rs/cargo@v1
         with:
