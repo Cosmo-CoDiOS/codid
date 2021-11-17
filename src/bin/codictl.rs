@@ -27,7 +27,7 @@ fn main() {
     let matches =
         get_args().expect("ERROR: Failed to get CLI arguments, this is bad!");
 
-    let min_log_level = match matches.occurrences_of("verbose") {
+    let _min_log_level = match matches.occurrences_of("verbose") {
         0 => slog::Level::Info,
         1 => slog::Level::Debug,
         _ => slog::Level::Trace,
