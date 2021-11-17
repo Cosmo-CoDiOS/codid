@@ -59,10 +59,10 @@ jobs:
       - name: Package Release
         shell: bash
         run: |
-            tar -czvf codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz target/aarch64-unknown-linux-musl/debug/codid target/aarch64-unknown-linux-musl/debug/codictl
+            tar -czvf /home/runner/work/codid/codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
       - name: Publish release artifacts
         uses: softprops/action-gh-release@v1
         with:
-            files: codid-${{ matrix.rom }}-${{ matrix.codi }}-release.tgz
+            files: /home/runner/work/codid/codid-${{ matrix.rom }}-${{ matrix.codi }}-release.tgz
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
