@@ -1,4 +1,4 @@
-name: codid CI debug builds
+name: codid CI release builder
 'on': push
 env:
   CARGO_TERM_COLOR: always
