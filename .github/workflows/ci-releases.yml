@@ -1,0 +1,67 @@
+name: codid CI debug builds
+'on': push
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  create-release:
+  #  if: startsWith(github.ref, 'refs/tags/')
+    name: >-
+      Release builder for Cosmo ROM: ${{ matrix.rom }}, CoDi firmware: ${{
+      matrix.codi }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rom:
+          - android
+          - gemian
+          - postmarketos
+          - sailfish
+          - ubports
+        codi:
+          - stock-codi
+          - codios-codi
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install musl tools
+        run: sudo apt-get install -y musl-tools
+      - name: Setup Cargo binary caching/installation action
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+          use-tool-cache: true
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+          target: aarch64-unknown-linux-musl
+          profile: minimal
+      - name: Build project (musl/aarch64) in release mode
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: >-
+            --all --release --locked --verbose  --features=${{ matrix.codi
+            }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
+          use-cross: true
+      - name: 'Install (Cargo) binutils, if the build is a release.'
+        run:
+          cargo install cargo-binutils && rustup component add
+          llvm-tools-preview
+
+      - name: Strip the CoDiOS image if the build is a release
+        run: cargo strip --release -- --strip-all
+      - name: Package Release
+        shell: bash
+        run: |
+            tar -czvf codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz target/aarch64-unknown-linux-musl/debug/codid target/aarch64-unknown-linux-musl/debug/codictl
+
+      - name: Publish release artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+            files: codid-${{ matrix.rom }}-${{ matrix.codi }}-release.tgz
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
