@@ -51,7 +51,7 @@ jobs:
       - name: Upload [debug] artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: 'codid-${{ matrix.rom }}--${{ matrix.codi }}-debug'
+          name: 'codid-${{ matrix.rom }}-${{ matrix.codi }}-debug'
           path: |
             /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
             /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
