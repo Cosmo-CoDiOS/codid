@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install musl tools
         run: sudo apt-get install -y musl-tools
-      - name: Setup Cargo binary caching/installation action
+      - name: Install cargo-cross
         uses: actions-rs/install@v0.1
         with:
           crate: cross
