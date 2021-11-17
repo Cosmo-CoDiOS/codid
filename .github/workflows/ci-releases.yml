@@ -31,6 +31,12 @@ jobs:
           crate: cross
           version: latest
           use-tool-cache: true
+      - name: Install cargo-binutils
+        uses: actions-rs/install@v0.1
+        with:
+            crate: cargo-binutils
+            version: latest
+            use-tool-cache: true
       - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
