@@ -62,6 +62,8 @@ optional = true
 [dependencies.codi_proto_common]
 git = "https://github.com/Cosmo-CoDiOS/codi_protos"
 branch = "main"
+optional = true
+features = ["std"]
 
 [dependencies.codi_stock_proto]
 git = "https://github.com/Cosmo-CoDiOS/codi_protos"
