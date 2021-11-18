@@ -23,8 +23,8 @@ path = "src/lib.rs"
 
 [features]
 default = []
-stock-codi = ["codi_stock_proto"]
-codios-codi = ["codi_os_proto"]
+stock-codi = ["codi_proto_common", "codi_stock_proto"]
+codios-codi = ["codi_proto_common", "codi_os_proto"]
 sailfish = ["dbus", "dbus-tokio"]
 android = []
 ubports = ["dbus", "dbus-tokio"]
