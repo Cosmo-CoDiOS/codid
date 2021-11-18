@@ -12,12 +12,13 @@ fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
         .version(VERSION)
         .author("The codid Developers")
         .about("Client to the codid server")
-        .arg(Arg::with_name("verbose")
-            .short("v")
-            .multiple(true)
-            .help("Verbosity level"))
-        .subcommand(SubCommand::with_name("spawn")
-                        .about("Starts the daemon"))
+        .arg(
+            Arg::with_name("verbose")
+                .short("v")
+                .multiple(true)
+                .help("Verbosity level"),
+        )
+        .subcommand(SubCommand::with_name("spawn").about("Starts the daemon"))
         .get_matches();
 
     Ok(matches.clone())
@@ -33,5 +34,5 @@ fn main() {
         _ => slog::Level::Trace,
     };
 
-   /* let log = setup_logging(min_log_level).expect("Could not setup logging."); */
+    /* let log = setup_logging(min_log_level).expect("Could not setup logging."); */
 }

@@ -30,5 +30,5 @@ pub struct State {
 
 pub mod daemon;
 pub mod logging;
-pub(crate) mod rpc;
 pub(crate) mod platforms;
+pub(crate) mod rpc;
