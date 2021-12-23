@@ -3,7 +3,7 @@
 use std::env;
 use std::error::Error;
 
-use clap::{App, Arg, ArgMatches, SubCommand};
+use clap::{App, Arg, ArgMatches};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -18,7 +18,6 @@ fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
                 .multiple(true)
                 .help("Verbosity level"),
         )
-        .subcommand(SubCommand::with_name("spawn").about("Starts the daemon"))
         .get_matches();
 
     Ok(matches.clone())
