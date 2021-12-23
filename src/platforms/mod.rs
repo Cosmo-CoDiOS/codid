@@ -1,11 +1,14 @@
-#[cfg(all(feature = "android"))]
+#[cfg(feature = "android")]
 pub(crate) mod android;
 
-#[cfg(all(feature = "gemian"))]
+#[cfg(feature = "gemian")]
 pub(crate) mod gemian;
 
-#[cfg(all(feature = "sailfish"))]
+#[cfg(feature = "sailfish")]
 pub(crate) mod sailfish;
 
-#[cfg(all(feature = "ubports"))]
+#[cfg(feature = "ubports")]
 pub(crate) mod ubports;
+
+#[cfg(feature = "postmarketos")]
+pub(crate) mod postmarketos;
