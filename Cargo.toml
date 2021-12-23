@@ -70,6 +70,10 @@ git = "https://github.com/Cosmo-CoDiOS/codi_protos"
 branch = "main"
 optional = true
 
+[dependencies.codi_daemon_proto]
+git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+branch = "main"
+
 [profile.dev]
 lto = true
 opt-level = "z"
