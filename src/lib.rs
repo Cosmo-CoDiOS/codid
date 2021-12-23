@@ -15,6 +15,25 @@
     variant_size_differences
 )]
 
+// check for CoDiOS or stock CoDi feature enablement
+#[cfg(not(any(feature = "stock-codi", feature = "codios-codi")))]
+compile_error!("ONE variant of CoDi required as a feature, please respecify!");
+
+// check for at least one ROM target
+#[cfg(not(any(
+    feature = "sailfish",
+    feature = "android",
+    feature = "ubports",
+    feature = "gemian",
+    feature = "postmarketos"
+)))]
+compile_error!(
+    "At least ONE Cosmo ROM is required as a feature, please specify!"
+);
+
+#[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
+compile_error!("CPU I was asked to target isn't supported, try again!");
+
 #[macro_use]
 extern crate slog;
 
