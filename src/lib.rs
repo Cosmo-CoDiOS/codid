@@ -28,7 +28,20 @@ pub struct State {
     pub log: slog::Logger,
 }
 
-pub mod daemon;
 pub mod logging;
 pub(crate) mod platforms;
 pub(crate) mod rpc;
+
+pub mod daemon {
+    //! This is the module for the `codid` daemon.
+
+    use super::State;
+
+    /// Daemon entrypoint
+    pub async fn start(state: State) {
+        let log = state.log;
+        let _cfg = state.cfg; /* not used yet */
+
+        info!(log, "Hello, Cosmo!");
+    }
+}
