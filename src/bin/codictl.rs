@@ -10,7 +10,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
     let matches = App::new("codictl")
         .version(VERSION)
-        .author("The codid Developers")
+        .author("The Cosmo-CoDiOS Group")
         .about("Client to the codid server")
         .arg(
             Arg::with_name("verbose")

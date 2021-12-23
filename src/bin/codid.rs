@@ -29,7 +29,7 @@ fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
 fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
     let matches = App::new("codid")
         .version(VERSION)
-        .author("The codid Developers")
+        .author("The Cosmo-CoDiOS Group")
         .about("Cross-platform interface to the Cosmo Communicator's cover display (CoDi)")
         .arg(Arg::with_name("config")
             .long("config")
