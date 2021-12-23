@@ -74,6 +74,10 @@ optional = true
 git = "https://github.com/Cosmo-CoDiOS/codi_protos"
 branch = "main"
 
+[dependencies.codi_bootload_proto]
+git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+branch = "main"
+
 [profile.dev]
 lto = true
 opt-level = "z"
