@@ -43,9 +43,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.51"
+version = "1.0.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
+checksum = "84450d0b4a8bd1ba4144ce8ce718fbc5d071358b1e5384bace6536b3d1f2d5b3"
 
 [[package]]
 name = "arrayvec"
@@ -138,6 +138,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "codi_bootload_proto"
+version = "0.1.0"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#288df415389e619f3deb480934f9fdd91197cc06"
+dependencies = [
+ "codi_proto_common",
+ "prost",
+ "prost-build",
+ "prost-types",
+]
+
+[[package]]
 name = "codi_daemon_proto"
 version = "0.1.0"
 source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#288df415389e619f3deb480934f9fdd91197cc06"
@@ -182,6 +193,7 @@ name = "codid"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "codi_bootload_proto",
  "codi_daemon_proto",
  "codi_os_proto",
  "codi_proto_common",
