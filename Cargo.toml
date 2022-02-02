@@ -34,7 +34,7 @@ postmarketos = ["dbus", "dbus-tokio"]
 [dependencies]
 futures = "0.3.19"
 config = "0.11.0"
-clap = "2.34.0"
+clap = "3.0.10"
 slog-term = "2.8.0"
 slog-async = "2.7.0"
 
