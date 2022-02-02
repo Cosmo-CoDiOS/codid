@@ -25,11 +25,11 @@ path = "src/lib.rs"
 default = []
 stock-codi = ["codi_proto_common", "codi_stock_proto"]
 codios-codi = ["codi_proto_common", "codi_os_proto"]
-sailfish = ["dbus", "dbus-tokio"]
+sailfish = ["dbus", "ical"]
 android = []
-ubports = ["dbus", "dbus-tokio"]
-gemian = ["dbus", "dbus-tokio"]
-postmarketos = ["dbus", "dbus-tokio"]
+ubports = ["dbus", "ical"]
+gemian = ["dbus", "ical"]
+postmarketos = ["dbus", "ical"]
 
 [dependencies]
 futures = "0.3.19"
@@ -42,6 +42,10 @@ slog-async = "2.7.0"
 version = "0.9.5"
 optional = true
 
+[dependencies.ical]
+version = "0.7.0"
+optional = true
+
 [dependencies.slog]
 version = "2.7.0"
 features = ["max_level_trace"]
@@ -49,10 +53,6 @@ features = ["max_level_trace"]
 [dependencies.tokio]
 version = "1.15.0"
 features = ["full"]
-
-[dependencies.dbus-tokio]
-version = "0.7.5"
-optional = true
 
 [dependencies.codi_os_proto]
 git = "https://github.com/Cosmo-CoDiOS/codi_protos"
