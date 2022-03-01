@@ -179,6 +179,7 @@ dependencies = [
 [[package]]
 name = "codi_daemon_proto"
 version = "0.1.0"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#d4ea408e805f84baf479df351a736b6159a5a9ff"
 dependencies = [
  "codi_proto_common",
 ]
