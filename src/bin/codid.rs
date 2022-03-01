@@ -1,55 +1,66 @@
 //! Main executable for the `codid` daemon.
 
 use std::env;
+use std::env::var;
 use std::error::Error;
+use std::path::Path;
+use std::sync::{Arc, Mutex};
 
-use clap::{App, Arg, ArgMatches, SubCommand};
+use clap::{Arg, ArgMatches, Command};
 use config::Config;
-use futures::executor::block_on;
-use slog::{debug, trace};
+use slog::{debug, error, trace};
 
 use codid::daemon::start;
 use codid::logging::setup_logging;
-use codid::State;
+use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
-    let path = std::path::Path::new(cfg_file);
-    let cfg = Config::default()
+    let path = if Path::new(cfg_file).exists() {
+        Path::new(&cfg_file).to_path_buf()
+    } else {
+        let xdg_cfg_home = var("XDG_CONFIG_HOME").unwrap_or(format!(
+            "{}/{}",
+            var("HOME").unwrap(),
+            "/.config"
+        ));
+        Path::new(&xdg_cfg_home).join("codid.toml").to_path_buf()
+    };
+
+    let cfg = Config::new()
         .merge(config::File::from(path))
-        .unwrap()
-        .merge(config::Environment::with_prefix("COSMO_CODID_CONFIG_PATH"))
-        .unwrap()
+        .expect("Config doesn't exist!")
+        .merge(config::Environment::with_prefix("CODID"))
+        .expect("Unable to open environment variable for config overriding!")
         .clone();
 
     Ok(cfg)
 }
 
-fn get_args() -> Result<ArgMatches<'static>, Box<dyn Error>> {
-    let matches = App::new("codid")
+fn get_args() -> Result<ArgMatches, Box<dyn Error>> {
+    let matches = Command::new("codid")
         .version(VERSION)
         .author("The Cosmo-CoDiOS Group")
-        .about("Cross-platform interface to the Cosmo Communicator's cover display (CoDi)")
-        .arg(Arg::with_name("config")
+        .about("Cross-platform daemon-based interface to the Cosmo Communicator's cover display")
+        .arg_required_else_help(true)
+        .arg(Arg::new("config")
             .long("config")
-            .short("c")
+            .short('c')
             .takes_value(true)
-            .required(false)
             .help("Path to TOML configuration"))
-        .arg(Arg::with_name("verbose")
-            .short("v")
-            .multiple(true)
+        .arg(Arg::new("verbose")
+            .short('v')
+            .multiple_occurrences(true)
             .help("Verbosity level"))
-        .subcommand(SubCommand::with_name("spawn")
-                        .about("Starts the daemon"))
+        .subcommand(Command::new("spawn")
+            .about("Starts the daemon."))
         .get_matches();
 
-    Ok(matches.clone())
+    Ok(matches)
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() {
     let matches =
         get_args().expect("ERROR: Failed to get CLI arguments, this is bad!");
 
@@ -63,25 +74,32 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     /* load config file */
 
-    let cfg_path = matches.value_of("config")
-        .expect("Configuration file not specified. Try specifying the configuration file.");
+    let cfg_path = matches.value_of("config").unwrap_or_default();
 
     let cfg = load_config(&cfg_path)
         .expect("Error parsing configuration file. Check the validity.");
 
     /* Initialise state */
-    let state: State = State {
+    let state = Arc::new(Mutex::new(StateStruct {
         log: log.clone(),
         cfg: cfg.clone(),
-    };
+    }));
 
     trace!(
         log,
-        "Loaded configuration and (root) logger into shared State"
+        "Loaded configuration and (root) logger into shared State."
     );
 
-    debug!(log, "Handover to daemon");
-    block_on(start(state));
+    // handle subcommands
 
-    Ok(())
+    match matches.subcommand() {
+        Some(("spawn", _)) => {
+            debug!(log, "Handing over to daemon module...");
+            start(state.clone());
+        }
+        _ => {
+            error!(log, "Unsupported subcommand. Use `--help`."); // clap takes care of this, though
+            unreachable!();
+        }
+    }
 }
