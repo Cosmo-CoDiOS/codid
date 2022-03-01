@@ -1,0 +1,10 @@
+[Unit]
+Description=Cross-platform daemon-based interface to the CoDi external display on the Cosmo Communicator.
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/codid spawn
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
