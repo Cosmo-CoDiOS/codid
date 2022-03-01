@@ -12,3 +12,5 @@ pub(crate) mod ubports;
 
 #[cfg(feature = "postmarketos")]
 pub(crate) mod postmarketos;
+
+pub(crate) mod common;
