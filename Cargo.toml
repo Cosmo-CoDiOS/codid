@@ -9,7 +9,7 @@ categories = ["aarch64", "daemon", "planet-computers"]
 version = "0.1.0"
 authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
 keywords = ["cover-display", "codi", "planet-computers"]
-edition = "2018"
+edition = "2021"
 
 [[bin]]
 name = "codid"
@@ -33,8 +33,8 @@ postmarketos = ["dbus", "ical"]
 
 [dependencies]
 futures = "0.3.21"
-config = "0.12.0"
-clap = "3.1.3"
+config = "0.13.1"
+clap = "3.1.12"
 slog-term = "2.9.0"
 structure = "0.1.2"
 lazy_static = "1.4.0"
