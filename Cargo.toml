@@ -34,7 +34,7 @@ postmarketos = ["dbus", "ical"]
 [dependencies]
 futures = "0.3.21"
 config = "0.13.1"
-clap = "3.1.12"
+clap = "3.1.15"
 slog-term = "2.9.0"
 structure = "0.1.2"
 lazy_static = "1.4.0"
@@ -55,7 +55,7 @@ version = "2.7.0"
 features = ["max_level_trace"]
 
 [dependencies.tokio]
-version = "1.17.0"
+version = "1.18.1"
 features = ["full"]
 
 [dependencies.codi_os_proto]
@@ -87,6 +87,7 @@ lto = true
 opt-level = "z"
 codegen-units = 1
 debug = true
+strip = false
 
 [profile.dev.package."*"]
 codegen-units = 1
@@ -98,6 +99,7 @@ lto = true
 opt-level = "z"
 codegen-units = 1
 debug = false
+strip = true
 
 [profile.release.package."*"]
 codegen-units = 1
