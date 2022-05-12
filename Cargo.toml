@@ -34,7 +34,7 @@ postmarketos = ["dbus", "ical"]
 [dependencies]
 futures = "0.3.21"
 config = "0.13.1"
-clap = "3.1.15"
+clap = "3.1.18"
 slog-term = "2.9.0"
 structure = "0.1.2"
 lazy_static = "1.4.0"
@@ -55,7 +55,7 @@ version = "2.7.0"
 features = ["max_level_trace"]
 
 [dependencies.tokio]
-version = "1.18.1"
+version = "1.18.2"
 features = ["full"]
 
 [dependencies.codi_os_proto]
