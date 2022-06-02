@@ -18,6 +18,13 @@ assets = [
     { source = "assets/lib/systemd/user/codid.service", dest = "/usr/lib/systemd/user/codid.service", config = true, doc = false }
 ]
 
+[package.metadata.android]
+package = "org.cosmocodios.codid.daemon"
+
+build_targets = ["aarch64-linux-android"]
+
+apk_name = "codidaemon"
+
 [[bin]]
 name = "codid"
 
