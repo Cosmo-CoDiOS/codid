@@ -1,0 +1,59 @@
+name: codid APK debug builder
+'on':
+  - push
+  - pull_request
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build-debug-android-apk:
+    name: >-
+      Debug APK builder for the Android ROMs, targeted for both CoDi variants.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+      - name: Initialise Cargo binary caching, and install Cross
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+          use-tool-cache: true
+      - name: Install `cargo-apk`
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-apk
+          version: latest
+      - name: Configure Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+          target: aarch64-linux-android
+          profile: minimal
+      - name: Build project in debug mode
+        env:
+            ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: cargo apk build --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
+      - name: Upload produced executables
+        run: find /home/runner/work/codid/codid/target
+
+
+
+
+
+
+
+
+
+
+
+
+
+
