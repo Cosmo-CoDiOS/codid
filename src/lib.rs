@@ -1,18 +1,19 @@
 //! This module holds various bits and pieces for the `codid` daemon to run.
 #![deny(
-warnings,
-missing_copy_implementations,
-missing_debug_implementations,
-missing_docs,
-clippy::all,
-clippy::pedantic,
-trivial_casts,
-trivial_numeric_casts,
-unsafe_code,
-unused_import_braces,
-unused_qualifications,
-unused_extern_crates,
-variant_size_differences
+    warnings,
+    missing_copy_implementations,
+    unused_imports,
+    missing_debug_implementations,
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unused_import_braces,
+    unused_qualifications,
+    unused_extern_crates,
+    variant_size_differences
 )]
 
 #[macro_use]
@@ -26,11 +27,11 @@ compile_error!("ONE variant of CoDi required as a feature, please respecify!");
 
 // check for at least one ROM target
 #[cfg(not(any(
-feature = "sailfish",
-feature = "android",
-feature = "ubports",
-feature = "gemian",
-feature = "postmarketos"
+    feature = "sailfish",
+    feature = "android",
+    feature = "ubports",
+    feature = "gemian",
+    feature = "postmarketos"
 )))]
 compile_error!(
     "At least ONE Cosmo ROM is required as a feature, please specify!"
@@ -53,7 +54,7 @@ pub type State = Arc<Mutex<StateStruct>>;
 
 pub(crate) mod control_loop;
 pub mod logging;
-pub(crate) mod platforms;
+pub mod platforms;
 pub mod rpc;
 
 pub mod daemon {
@@ -62,9 +63,7 @@ pub mod daemon {
     use std::path::Path;
     use std::thread;
 
-    use crate::{
-        control_loop::{enter_control_loop, ControlLoopError},
-    };
+    use crate::control_loop::{enter_control_loop, ControlLoopError};
 
     use super::State;
 
@@ -80,11 +79,14 @@ pub mod daemon {
 
         debug!(log, "Initializing daemon control loop...");
 
-        let path = Path::new(s.clone()
-            .lock()
-            .expect("Unable to get a lock on the Config.").cfg
-            .get("rpc_socket")
-            .unwrap_or("/tmp/codid.sock"));
+        let path = Path::new(
+            s.clone()
+                .lock()
+                .expect("Unable to get a lock on the Config.")
+                .cfg
+                .get("rpc_socket")
+                .unwrap_or("/tmp/codid.sock"),
+        );
 
         // LAUNCH THREAD
         let ctrl_loop_thread = thread::Builder::new()
@@ -103,8 +105,8 @@ pub mod daemon {
                         ControlLoopError::ServerStartError(_path) => {
                             error!(log, "Could not start server.");
                             std::process::exit(1);
-                        },
-                    }
+                        }
+                    },
                 }
             });
 
