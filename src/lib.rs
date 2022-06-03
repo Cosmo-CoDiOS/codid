@@ -62,7 +62,9 @@ pub mod daemon {
     use std::path::Path;
     use std::thread;
 
-    use crate::control_loop::{ControlLoopError, enter_control_loop};
+    use crate::{
+        control_loop::{enter_control_loop, ControlLoopError},
+    };
 
     use super::State;
 
@@ -75,45 +77,33 @@ pub mod daemon {
             .new(o!("module" => "daemon"));
 
         info!(log, "Hello, Cosmo!");
+
         debug!(log, "Initializing daemon control loop...");
 
-        let path = Path::new("/run/user/1000/codi.sock");
+        let path = Path::new(s.clone()
+            .lock()
+            .expect("Unable to get a lock on the Config.").cfg
+            .get("rpc_socket")
+            .unwrap_or("/tmp/codid.sock"));
 
         // LAUNCH THREAD
         let ctrl_loop_thread = thread::Builder::new()
             .name("control_loop".to_string())
             .spawn(move || {
                 let log = s
+                    .clone()
                     .lock()
                     .expect("Unable to get a lock on the `Logger`")
                     .log
                     .new(o!("thread" => "control_loop_thread"));
 
-                match enter_control_loop(&s, &path) {
-                    Ok(_) => (),
+                match enter_control_loop(&s, &path.clone()) {
+                    Ok(..) => (),
                     Err(e) => match e {
-                        ControlLoopError::NoSuchSocket(_path) => {
-                            error!(log, "Control loop returned `NoSuchSocket` error - this is \
-                            unrecoverable!");
-                            error!(log, "Helpful information: Socket path value: `{}`",
-                                path
-                                .clone() // hacky fix to solve borrowing
-                                .to_str()
-                                .expect("Unable to get socket path to `&str` for debugging info!"));
+                        ControlLoopError::ServerStartError(_path) => {
+                            error!(log, "Could not start server.");
                             std::process::exit(1);
-                        }
-                        ControlLoopError::InvalidMethod(method) => {
-                            warn!(log, "Control loop returned `InvalidMethod` error. This isn't
-                            a failure, but merely a invalid JSON-RPC request referencing a
-                            unknown method. Continuing loop.");
-                            warn!(log, "Helpful information: Invalid method value: `{}`", method);
-                        }
-                        ControlLoopError::InvalidMethodArgs(args) => {
-                            warn!(log, "Control loop returned `InvalidMethodArgs` error. This \
-                            isn't a failure, but merely an invalid JSON-RPC request referencing \
-                            unknown method arguments. Continuing loop.");
-                            warn!(log, "Helpful information: Invalid method args: `{:?}`", args);
-                        }
+                        },
                     }
                 }
             });
