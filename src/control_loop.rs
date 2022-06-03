@@ -15,7 +15,7 @@ type ControlLoopResult<'a> = Result<(), ControlLoopError<'a>>;
 
 pub(crate) fn enter_control_loop<'a>(
     s: &State,
-    sock: &'a Path
+    sock: &'a Path,
 ) -> ControlLoopResult<'a> {
     // clone and lock state
     let log = s
@@ -29,9 +29,7 @@ pub(crate) fn enter_control_loop<'a>(
 
     let mut io = IoHandler::new();
 
-    let server = match ServerBuilder::new(io)
-        .start(sock.to_str().unwrap())
-    {
+    let server = match ServerBuilder::new(io).start(sock.to_str().unwrap()) {
         Ok(s) => s,
         Err(_e) => return Err(ControlLoopError::ServerStartError(sock)),
     };
