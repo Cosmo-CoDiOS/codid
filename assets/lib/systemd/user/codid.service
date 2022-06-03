@@ -3,7 +3,7 @@ Description=Cross-platform daemon-based interface to the CoDi external display o
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/codid spawn
+ExecStart=/usr/bin/codid spawn
 Restart=on-failure
 
 [Install]
