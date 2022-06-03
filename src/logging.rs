@@ -1,14 +1,13 @@
 //! This is the logging module for `codid`.
 
-use std::error::Error;
 use std::sync::Mutex;
 
-use slog::{Drain, Level, LevelFilter, Logger, o};
+use slog::{o, Drain, Level, LevelFilter, Logger};
 
 /// Initialisation routine for logging.
 /// Derived from GitHub repo `leftwm/leftwm` (TODO: Make this a link)
 #[allow(clippy::module_name_repetitions)]
-pub fn setup_logging(level: Level) -> Result<Logger, Box<dyn Error>> {
+pub fn setup_logging(level: Level) -> Option<Logger> {
     let decorator = slog_term::TermDecorator::new().build();
     let drain = slog_term::FullFormat::new(decorator).build().fuse();
     let drain = LevelFilter::new(drain, level).fuse();
@@ -18,5 +17,5 @@ pub fn setup_logging(level: Level) -> Result<Logger, Box<dyn Error>> {
 
     trace!(log, "Logging initialised.");
 
-    Ok(log)
+    Some(log)
 }
