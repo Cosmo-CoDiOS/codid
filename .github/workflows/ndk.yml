@@ -38,8 +38,8 @@ jobs:
           profile: minimal
       - name: Build project in debug mode
         env:
-            ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
-            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: cargo apk build --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
       - name: Upload produced executables
         run: find /home/runner/work/codid/codid/target
