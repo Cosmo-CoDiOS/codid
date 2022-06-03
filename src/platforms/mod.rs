@@ -14,3 +14,5 @@ pub(crate) mod ubports;
 pub(crate) mod postmarketos;
 
 pub(crate) mod common;
+#[cfg(all(feature = "nixos", target_os = "linux"))]
+pub(crate) mod nixos;

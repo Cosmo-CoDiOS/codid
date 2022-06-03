@@ -37,6 +37,7 @@ android = []
 ubports = ["dbus", "ical"]
 gemian = ["dbus", "ical"]
 postmarketos = ["dbus", "ical"]
+nixos = ["dbus", "ical"]
 
 [dependencies]
 futures = "0.3.21"
