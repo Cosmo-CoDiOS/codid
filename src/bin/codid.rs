@@ -1,14 +1,28 @@
 //! Main executable for the `codid` daemon.
+#![deny(
+    warnings,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unused_import_braces,
+    unused_qualifications,
+    unused_extern_crates,
+    variant_size_differences
+)]
 
 use std::env;
 use std::env::var;
-use std::error::Error;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 use clap::{Arg, ArgMatches, Command};
-use config::Config;
-use slog::{debug, error, trace};
+use config::{Config, Environment, File};
+use slog::{debug, trace};
 
 use codid::daemon::start;
 use codid::logging::setup_logging;
@@ -16,7 +30,7 @@ use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
+fn load_config(cfg_file: &str) -> Option<Config> {
     let path = if Path::new(cfg_file).exists() {
         Path::new(&cfg_file).to_path_buf()
     } else {
@@ -28,22 +42,21 @@ fn load_config(cfg_file: &str) -> Result<Config, Box<dyn Error>> {
         Path::new(&xdg_cfg_home).join("codid.toml").to_path_buf()
     };
 
-    let cfg = Config::new()
-        .merge(config::File::from(path))
-        .expect("Config doesn't exist!")
-        .merge(config::Environment::with_prefix("CODID"))
-        .expect("Unable to open environment variable for config overriding!")
-        .clone();
+    let cfg = Config::builder()
+        .add_source(File::from(path))
+        .add_source(Environment::with_prefix("CODI"))
+        .build()
+        .expect("Unable to construct Config struct");
 
-    Ok(cfg)
+    Some(cfg)
 }
 
-fn get_args() -> Result<ArgMatches, Box<dyn Error>> {
+fn get_args() -> Option<ArgMatches> {
     let matches = Command::new("codid")
         .version(VERSION)
         .author("The Cosmo-CoDiOS Group")
+        .subcommand_required(true)
         .about("Cross-platform daemon-based interface to the Cosmo Communicator's cover display")
-        .arg_required_else_help(true)
         .arg(Arg::new("config")
             .long("config")
             .short('c')
@@ -57,7 +70,7 @@ fn get_args() -> Result<ArgMatches, Box<dyn Error>> {
             .about("Starts the daemon."))
         .get_matches();
 
-    Ok(matches)
+    Some(matches)
 }
 
 fn main() {
@@ -98,8 +111,7 @@ fn main() {
             start(state.clone());
         }
         _ => {
-            error!(log, "Unsupported subcommand. Use `--help`."); // clap takes care of this, though
-            unreachable!();
+            unreachable!(); // this shouldn't be reached
         }
     }
 }
