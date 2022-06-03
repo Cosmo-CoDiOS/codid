@@ -21,7 +21,10 @@ assets = [
 [package.metadata.android]
 package = "org.cosmocodios.codid.daemon"
 build_targets = ["aarch64-linux-android"]
-apk_name = "codidaemon"
+apk_name = "codid"
+
+min_sdk_version = 28
+target_sdk_version = 28
 
 [[bin]]
 name = "codid"
@@ -39,7 +42,7 @@ default = []
 stock-codi = ["codi_proto_common", "codi_stock_proto"]
 codios-codi = ["codi_proto_common", "codi_os_proto"]
 sailfish = ["dbus", "ical"]
-android = []
+android = ["ndk", "ndk-glue"]
 ubports = ["dbus", "ical"]
 gemian = ["dbus", "ical"]
 postmarketos = ["dbus", "ical"]
@@ -55,6 +58,8 @@ lazy_static = "1.4.0"
 jsonrpc-core = "18.0.0"
 jsonrpc-ipc-server = "18.0.0"
 jsonrpc-derive = "18.0.0"
+ndk = { version = "*", optional = true }
+ndk-glue = { version = "*", optional = true }
 
 [dependencies.dbus]
 version = "0.9.5"

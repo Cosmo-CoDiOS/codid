@@ -55,7 +55,6 @@ pub type State = Arc<Mutex<StateStruct>>;
 pub(crate) mod control_loop;
 pub mod logging;
 pub mod platforms;
-pub mod rpc;
 
 pub mod daemon {
     //! This is the module for the `codid` daemon.

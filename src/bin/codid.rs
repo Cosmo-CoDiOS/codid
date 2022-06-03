@@ -30,6 +30,7 @@ use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+#[cfg(not(target_os = "android"))]
 fn load_config(cfg_file: &str) -> Option<Config> {
     let path = if Path::new(cfg_file).exists() {
         Path::new(&cfg_file).to_path_buf()
@@ -51,6 +52,7 @@ fn load_config(cfg_file: &str) -> Option<Config> {
     Some(cfg)
 }
 
+#[cfg(not(target_os = "android"))]
 fn get_args() -> Option<ArgMatches> {
     let matches = Command::new("codid")
         .version(VERSION)
@@ -73,6 +75,7 @@ fn get_args() -> Option<ArgMatches> {
     Some(matches)
 }
 
+#[cfg(not(target_os = "android"))]
 fn main() {
     let matches =
         get_args().expect("ERROR: Failed to get CLI arguments, this is bad!");
@@ -114,4 +117,13 @@ fn main() {
             unreachable!(); // this shouldn't be reached
         }
     }
+}
+#[cfg_attr(target_os = "android", ndk_glue::main)]
+fn main() {
+    let cfg = Config::builder().build().unwrap();
+    let log = setup_logging(slog::Level::Info).unwrap();
+
+    let state = Arc::new(Mutex::new(StateStruct { cfg, log }));
+
+    start(state.clone());
 }
