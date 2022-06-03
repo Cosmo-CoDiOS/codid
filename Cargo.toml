@@ -20,9 +20,7 @@ assets = [
 
 [package.metadata.android]
 package = "org.cosmocodios.codid.daemon"
-
 build_targets = ["aarch64-linux-android"]
-
 apk_name = "codidaemon"
 
 [[bin]]
@@ -34,6 +32,7 @@ name = "codictl"
 [lib]
 name = "codid"
 path = "src/lib.rs"
+crate-type = ["lib", "cdylib"]
 
 [features]
 default = []

@@ -1,10 +1,10 @@
 //! This module holds various bits and pieces for the `codid` daemon to run.
 #![deny(
-    warnings,
+//    warnings,
     missing_copy_implementations,
     unused_imports,
     missing_debug_implementations,
-    missing_docs,
+//    missing_docs,
     clippy::all,
     clippy::pedantic,
     trivial_casts,
