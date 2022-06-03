@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::thread;
@@ -5,11 +7,9 @@ use std::time::Duration;
 
 use crate::State;
 
-#[allow(dead_code)]
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 
-#[allow(dead_code)]
 pub fn hw_reset_stm32(s: &State) {
     let log = s
         .lock()
@@ -53,7 +53,6 @@ pub fn hw_reset_stm32(s: &State) {
     drop(log);
 }
 
-#[allow(dead_code)]
 pub fn stm32_bootloader_dl(in_out: bool, s: &State) {
     let log = s
         .lock()
