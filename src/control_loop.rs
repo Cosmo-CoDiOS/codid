@@ -1,21 +1,22 @@
-use std::path::Path;
 use crate::State;
+use std::path::Path;
+use std::result::Result;
+
+use jsonrpc_ipc_server::jsonrpc_core::*;
+use jsonrpc_ipc_server::ServerBuilder;
 
 #[allow(clippy::module_name_repetitions)]
 #[derive(Debug, PartialOrd, PartialEq, Eq)]
 pub enum ControlLoopError<'a> {
-    NoSuchSocket(&'a Path),
-    #[allow(dead_code)]
-    InvalidMethod(String),
-    #[allow(dead_code)]
-    InvalidMethodArgs(Vec<String>),
+    ServerStartError(&'a Path),
 }
 
-#[allow(unreachable_code)]
+type ControlLoopResult<'a> = Result<(), ControlLoopError<'a>>;
+
 pub(crate) fn enter_control_loop<'a>(
     s: &State,
-    sock: &'a Path,
-) -> Result<(), ControlLoopError<'a>> {
+    sock: &'a Path
+) -> ControlLoopResult<'a> {
     // clone and lock state
     let log = s
         .lock()
@@ -26,15 +27,14 @@ pub(crate) fn enter_control_loop<'a>(
 
     debug!(log, "Entering command loop...");
 
-    // check socket exists
-    // it should be initialized by the daemon module
+    let mut io = IoHandler::new();
 
-    if !sock.exists() {
-        // no such socket
-        return Err(ControlLoopError::NoSuchSocket(sock));
-    }
+    let server = match ServerBuilder::new(io)
+        .start(sock.to_str().unwrap())
+    {
+        Ok(s) => s,
+        Err(_e) => return Err(ControlLoopError::ServerStartError(sock)),
+    };
 
-    loop {
-        trace!(log, "Waiting for command...");
-    }
+    Ok(server.wait())
 }
