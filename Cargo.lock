@@ -185,7 +185,7 @@ dependencies = [
 [[package]]
 name = "codi_bootload_proto"
 version = "0.1.0"
-source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#7e6b020e442bedd747093a8a5c1f1757c53e9cdc"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#a7b85f2b46495314e3f4cfdbb917b5a6cd558dc5"
 dependencies = [
  "codi_proto_common",
  "prost",
@@ -196,7 +196,7 @@ dependencies = [
 [[package]]
 name = "codi_daemon_proto"
 version = "0.1.0"
-source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#7e6b020e442bedd747093a8a5c1f1757c53e9cdc"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#a7b85f2b46495314e3f4cfdbb917b5a6cd558dc5"
 dependencies = [
  "codi_proto_common",
  "serde",
@@ -205,7 +205,7 @@ dependencies = [
 [[package]]
 name = "codi_os_proto"
 version = "0.1.0"
-source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#7e6b020e442bedd747093a8a5c1f1757c53e9cdc"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#a7b85f2b46495314e3f4cfdbb917b5a6cd558dc5"
 dependencies = [
  "codi_proto_common",
  "prost",
@@ -216,7 +216,7 @@ dependencies = [
 [[package]]
 name = "codi_proto_common"
 version = "0.1.0"
-source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#7e6b020e442bedd747093a8a5c1f1757c53e9cdc"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#a7b85f2b46495314e3f4cfdbb917b5a6cd558dc5"
 dependencies = [
  "serialport",
 ]
@@ -224,7 +224,7 @@ dependencies = [
 [[package]]
 name = "codi_stock_proto"
 version = "0.1.0"
-source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#7e6b020e442bedd747093a8a5c1f1757c53e9cdc"
+source = "git+https://github.com/Cosmo-CoDiOS/codi_protos?branch=main#a7b85f2b46495314e3f4cfdbb917b5a6cd558dc5"
 dependencies = [
  "codi_proto_common",
  "core2",
@@ -1438,9 +1438,9 @@ checksum = "42657b1a6f4d817cda8e7a0ace261fe0cc946cf3a80314390b22cc61ae080792"
 
 [[package]]
 name = "tokio"
-version = "1.18.2"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4903bf0427cf68dddd5aa6a93220756f8be0c34fcfa9f5e6191e103e15a31395"
+checksum = "0f392c8f16bda3456c0b00c6de39cb100449b98de55ac41c6cdd2bfcf53a1245"
 dependencies = [
  "bytes",
  "libc",

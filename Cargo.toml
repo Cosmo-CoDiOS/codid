@@ -70,7 +70,7 @@ version = "2.7.0"
 features = ["max_level_trace"]
 
 [dependencies.tokio]
-version = "1.18.2"
+version = "1.19.0"
 features = ["full"]
 
 [dependencies.codi_os_proto]
