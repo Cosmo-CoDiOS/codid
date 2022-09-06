@@ -30,8 +30,8 @@ path = "src/lib.rs"
 
 [features]
 default = []
-stock-codi = ["codi_proto_common", "codi_stock_proto"]
-codios-codi = ["codi_proto_common", "codi_os_proto"]
+stock-codi = ["codi_protocol_common", "codi_stock_protocol"]
+codios-codi = ["codi_protocol_common", "codi_os_protocol"]
 sailfish = ["dbus", "ical"]
 android = []
 ubports = ["dbus", "ical"]
@@ -66,28 +66,28 @@ features = ["max_level_trace"]
 version = "1.19.2"
 features = ["full"]
 
-[dependencies.codi_os_proto]
-git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+[dependencies.codi_os_protocol]
+git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 optional = true
 
-[dependencies.codi_proto_common]
-git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+[dependencies.codi_protocol_common]
+git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 optional = true
 features = ["std"]
 
-[dependencies.codi_stock_proto]
-git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+[dependencies.codi_stock_protocol]
+git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 optional = true
 
-[dependencies.codi_daemon_proto]
-git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+[dependencies.codi_daemon_protocol]
+git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 
-[dependencies.codi_bootload_proto]
-git = "https://github.com/Cosmo-CoDiOS/codi_protos"
+[dependencies.codi_bootload_protocol]
+git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 
 [profile.dev]
