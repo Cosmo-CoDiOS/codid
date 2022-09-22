@@ -19,9 +19,7 @@ pub(crate) fn enter_control_loop<'a>(
 ) -> ControlLoopResult<'a> {
     debug!("Entering command loop...");
 
-    debug!(log, "Entering command loop...");
-
-    let mut io = IoHandler::new();
+    let io = IoHandler::new();
 
     let server = match ServerBuilder::new(io).start(sock.to_str().unwrap()) {
         Ok(s) => s,
