@@ -65,9 +65,7 @@ fn get_args() -> Option<ArgMatches> {
             .help("Path to TOML configuration"))
         .subcommand(Command::new("spawn")
             .about("Starts the daemon."))
-        .get_matches();
-
-    Some(matches)
+        .get_matches()
 }
 
 
@@ -93,7 +91,7 @@ fn main() {
 
     // handle subcommands
 
-    match matches.subcommand() {
+    match args.subcommand() {
         Some(("spawn", _)) => {
             debug!("Handing over to daemon module...");
             start(state.clone());

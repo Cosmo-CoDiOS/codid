@@ -28,16 +28,14 @@ use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn get_args() -> Option<ArgMatches> {
-    let matches = Command::new("codictl")
+fn get_args() -> ArgMatches {
+    Command::new("codictl")
         .version(VERSION)
         .author("The Cosmo-CoDiOS Group")
         .about("Client to the codid server")
         .subcommand_required(true)
         .subcommand(Command::new("reset").about("Reset CoDi (reboot)"))
-        .get_matches();
-
-    Some(matches.clone())
+        .get_matches()
 }
 
 fn main() {
@@ -49,7 +47,7 @@ fn main() {
         cfg: Config::default(), // we don't use the config for the client, so let's specify a dummy
     }));
 
-    match matches.subcommand() {
+    match args.subcommand() {
         Some(("reset", _)) => {
             debug!("Handing over to daemon module...");
             codid::platforms::common::proc::hw_reset_stm32(&state);
