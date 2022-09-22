@@ -20,7 +20,7 @@ jobs:
                     - codios-codi
         steps:
             - name: Checkout sources
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Install Cross
               uses: actions-rs/install@v0.1
               with:
@@ -56,7 +56,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout sources
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Initialise Cargo binary caching, and install Cross
               uses: actions-rs/install@v0.1
               with:
