@@ -32,12 +32,10 @@ path = "src/lib.rs"
 default = []
 stock-codi = ["codi_protocol_common", "codi_stock_protocol"]
 codios-codi = ["codi_protocol_common", "codi_os_protocol"]
-sailfish = ["dbus", "ical"]
 android = []
 ubports = ["dbus", "ical"]
 gemian = ["dbus", "ical"]
 postmarketos = ["dbus", "ical"]
-nixos = ["dbus", "ical"]
 
 [dependencies]
 futures = "0.3.24"
