@@ -43,7 +43,7 @@ jobs:
                       --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
             - name: Upload produced executables (debug)
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: "codid-debug-${{ matrix.rom }}-${{ matrix.codi }}"
                   path: |
@@ -79,7 +79,7 @@ jobs:
                       --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
                   use-cross: true
             - name: Upload produced executables
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: "codid-android-debug"
                   path: |
