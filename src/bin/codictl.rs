@@ -21,7 +21,7 @@ extern crate log;
 use std::env;
 use std::sync::{Arc, Mutex};
 
-use clap::{Arg, ArgMatches, Command};
+use clap::{ArgMatches, Command};
 use config::Config;
 
 use codid::StateStruct;
