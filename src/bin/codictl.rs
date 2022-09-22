@@ -44,7 +44,6 @@ fn get_args() -> ArgMatches {
                 .about("Tell the STM32 to exit bootloader mode, and reboot"),
         )
         .get_matches()
-        .get_matches()
 }
 
 fn main() {
