@@ -19,8 +19,7 @@
 extern crate log;
 
 use std::env;
-use std::env::var;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 use clap::{Arg, ArgMatches, Command};
@@ -31,16 +30,11 @@ use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn load_config(cfg_file: &str) -> Option<Config> {
-    let path = if Path::new(cfg_file).exists() {
+fn load_config(cfg_file: PathBuf) -> Option<Config> {
+    let path = if cfg_file.exists() {
         Path::new(&cfg_file).to_path_buf()
     } else {
-        let xdg_cfg_home = var("XDG_CONFIG_HOME").unwrap_or(format!(
-            "{}/{}",
-            var("HOME").unwrap(),
-            "/.config"
-        ));
-        Path::new(&xdg_cfg_home).join("codid.toml").to_path_buf()
+        return None
     };
 
     let cfg = Config::builder()
@@ -52,8 +46,23 @@ fn load_config(cfg_file: &str) -> Option<Config> {
     Some(cfg)
 }
 
-fn get_args() -> Option<ArgMatches> {
-    let matches = Command::new("codid")
+fn get_default_cfg_path() -> Option<PathBuf> {
+    let xdg_dir = PathBuf::from(dirs::config_dir().unwrap().join(PathBuf::from("codid/config.toml")));
+    let android_dir =  PathBuf::from("/data/data/com.github.cosmo_codios.codid.android/config.toml");
+
+    println!("{:?}", xdg_dir.display());
+
+    if xdg_dir.exists() {
+        return Some(xdg_dir);
+    } else if android_dir.exists() {
+        return Some(android_dir)
+    } else {
+        return None
+    }
+}
+
+fn get_args() -> ArgMatches {
+    Command::new("codid")
         .version(VERSION)
         .author("The Cosmo-CoDiOS Group")
         .subcommand_required(true)
@@ -75,9 +84,12 @@ fn main() {
 
     /* load config file */
 
-    let cfg_path = matches.value_of("config").unwrap_or_default();
+    let cfg_path = match args.value_of("config") {
+        Some(cfg_path) => PathBuf::from(cfg_path),
+        None => get_default_cfg_path().expect("Unable to get configuration path from default logic. Likelihood is that config doesn't exist."),
+    };
 
-    let cfg = load_config(&cfg_path)
+    let cfg = load_config(cfg_path)
         .expect("Error parsing configuration file. Check the validity.");
 
     /* Initialise state */
