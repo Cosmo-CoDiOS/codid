@@ -23,7 +23,7 @@ jobs:
           - codios-codi
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install musl tools
         run: sudo apt-get install -y musl-tools
       - name: Setup Cargo binary caching/installation action
