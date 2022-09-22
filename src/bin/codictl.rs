@@ -43,15 +43,22 @@ fn main() {
     env_logger::init();
 
     /* Initialise state */
-    let state = Arc::new(Mutex::new(StateStruct {
+    let _state = Arc::new(Mutex::new(StateStruct {
         cfg: Config::default(), // we don't use the config for the client, so let's specify a dummy
     }));
 
     match args.subcommand() {
         Some(("reset", _)) => {
             debug!("Handing over to daemon module...");
-            codid::platforms::common::proc::hw_reset_stm32(&state);
+            codid::platforms::common::proc::hw_reset_stm32();
         }
+        Some(("enter-bootloader", _)) => {
+            codid::platforms::common::proc::stm32_bootloader_dl(true);
+        }
+        Some(("exit-bootloader", _)) => {
+            codid::platforms::common::proc::stm32_bootloader_dl(false);
+        }
+
         _ => {
             unreachable!(); // this shouldn't be reached
         }
