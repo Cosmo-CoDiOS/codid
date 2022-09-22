@@ -42,8 +42,6 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: false
-            - name: Install native deps
-              run: sudo apt-get install -y libdbus-1-dev:arm64 pkg-config:arm64 libudev-dev:arm64 libglib2.0-dev:arm64 libudev-dev:amd64 musl-dev:arm64 libdbus-1-dev:amd64 libsqlite3-dev:arm64 libsqlite3-dev:amd64 cmake:amd64
             - name: Install cargo-binutils
               uses: actions-rs/install@v0.1
               with:
@@ -57,8 +55,17 @@ jobs:
                   args: >-
                       --all --release --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
-            - name: Strip the produced binaries.
-              run: cargo strip --release --bin codid && cargo strip --release --bin codictl
+            - name: Strip the `codid` binary
+              uses: actions-rs/cargo@v1
+              with:
+                  command: strip
+                  args: strip --release --bin codid
+                  use-cross: true
+            - name: Strip the `codictl` binary
+              uses: actions-rs/cargo@v1
+                  command: strip
+                  args: --release --bin codictl
+                  use-cross: true
             - name: Package Release
               shell: bash
               run: |
@@ -115,8 +122,17 @@ jobs:
                   args: >-
                       --all --release --locked --verbose  --features=stock-codi,codios-codi,${{matrix.rom}} --target=aarch64-linux-android
                   use-cross: true
-            - name: Strip the produced binaries.
-              run: cargo strip --release --bin codid && cargo strip --release --bin codictl
+            - name: Strip the `codid` binary
+              uses: actions-rs/cargo@v1
+              with:
+                  command: strip
+                  args: strip --release --bin codid
+                  use-cross: true
+            - name: Strip the `codictl` binary
+              uses: actions-rs/cargo@v1
+                  command: strip
+                  args: --release --bin codictl
+                  use-cross: true
             - name: Package Release
               shell: bash
               run: |
