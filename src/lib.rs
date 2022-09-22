@@ -27,7 +27,6 @@ compile_error!("ONE variant of CoDi required as a feature, please respecify!");
 
 // check for at least one ROM target
 #[cfg(not(any(
-    feature = "sailfish",
     feature = "android",
     feature = "ubports",
     feature = "gemian",
@@ -50,7 +49,6 @@ pub struct StateStruct {
 /// `State` defines a custom type that holds `StateStruct` in an `Arc<Mutex<T>>`.
 pub type State = Arc<Mutex<StateStruct>>;
 
-pub mod codi_variants;
 pub(crate) mod control_loop;
 pub mod platforms;
 pub mod rpc;
