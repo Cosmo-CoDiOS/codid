@@ -17,7 +17,7 @@
 )]
 
 #[macro_use]
-extern crate slog;
+extern crate log;
 
 use std::sync::{Arc, Mutex};
 
@@ -45,15 +45,13 @@ compile_error!("Target CPU not supported, please respecify!");
 pub struct StateStruct {
     /// This field holds the configuration struct for `codid`.
     pub cfg: config::Config,
-    /// This field is the root `Logger` instance for `codid`.
-    pub log: slog::Logger,
 }
 
 /// `State` defines a custom type that holds `StateStruct` in an `Arc<Mutex<T>>`.
 pub type State = Arc<Mutex<StateStruct>>;
 
+pub mod codi_variants;
 pub(crate) mod control_loop;
-pub mod logging;
 pub mod platforms;
 pub mod rpc;
 
@@ -69,15 +67,9 @@ pub mod daemon {
 
     /// Daemon entrypoint
     pub fn start(s: State) {
-        let log = s
-            .lock()
-            .expect("Unable to get a lock on the Logger")
-            .log
-            .new(o!("module" => "daemon"));
+        info!("Hello, Cosmo!");
 
-        info!(log, "Hello, Cosmo!");
-
-        debug!(log, "Initializing daemon control loop...");
+        debug!("Initializing daemon control loop...");
 
         let path = Path::new(
             s.clone()
@@ -92,26 +84,20 @@ pub mod daemon {
         let ctrl_loop_thread = thread::Builder::new()
             .name("control_loop".to_string())
             .spawn(move || {
-                let log = s
-                    .clone()
-                    .lock()
-                    .expect("Unable to get a lock on the `Logger`")
-                    .log
-                    .new(o!("thread" => "control_loop_thread"));
-
                 match enter_control_loop(&s, &path.clone()) {
-                    Ok(..) => (),
+                    Ok(_) => (),
                     Err(e) => match e {
                         ControlLoopError::ServerStartError(_path) => {
-                            error!(log, "Could not start server.");
+                            error!("Could not start server.");
                             std::process::exit(1);
                         }
                     },
                 }
             });
 
-        info!(log, "The Cosmo-CoDiOS daemon has now started.");
-        info!(log, "Running until asked to stop...");
+
+        info!("The Cosmo-CoDiOS daemon has now started.");
+        info!("Running until asked to stop...");
 
         ctrl_loop_thread.unwrap().join().unwrap();
     }

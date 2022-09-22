@@ -33,16 +33,8 @@ pub(crate) type CoDiContacts = Vec<CoDiContact>;
 
 #[allow(unreachable_code)]
 #[allow(dead_code)]
-pub(crate) fn get_dbus_contacts(
-    s: &State,
-) -> Result<CoDiContacts, ContactsDbusRetrieveError> {
-    let log = s
-        .lock()
-        .expect("Unable to get a lock on the shared state.")
-        .log
-        .new(o!("task" => "get_dbus_contacts"));
-
-    trace!(log, "Get connection to session bus...");
+pub(crate) fn get_dbus_contacts(s: &State) -> CoDiDbusContactsResult {
+    trace!("Get connection to session bus...");
 
     let bus = match Connection::new_session() {
         Ok(res) => res,
@@ -183,9 +175,6 @@ pub(crate) fn get_dbus_contacts(
 
         codi_contacts.push(codi_contact);
     }
-
-    // release lock
-    drop(log);
 
     Ok(codi_contacts)
 }

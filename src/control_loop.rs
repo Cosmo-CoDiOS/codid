@@ -14,16 +14,10 @@ pub enum ControlLoopError<'a> {
 type ControlLoopResult<'a> = Result<(), ControlLoopError<'a>>;
 
 pub(crate) fn enter_control_loop<'a>(
-    s: &State,
+    _s: &State,
     sock: &'a Path,
 ) -> ControlLoopResult<'a> {
-    // clone and lock state
-    let log = s
-        .lock()
-        .unwrap()
-        .log
-        .clone()
-        .new(o!("module" => "control_loop"));
+    debug!("Entering command loop...");
 
     debug!(log, "Entering command loop...");
 
