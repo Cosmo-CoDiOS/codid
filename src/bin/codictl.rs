@@ -35,6 +35,15 @@ fn get_args() -> ArgMatches {
         .about("Client to the codid server")
         .subcommand_required(true)
         .subcommand(Command::new("reset").about("Reset CoDi (reboot)"))
+        .subcommand(
+            Command::new("enter-bootloader")
+                .about("Tell the STM32 to enter bootloader mode"),
+        )
+        .subcommand(
+            Command::new("exit-bootloader")
+                .about("Tell the STM32 to exit bootloader mode, and reboot"),
+        )
+        .get_matches()
         .get_matches()
 }
 
