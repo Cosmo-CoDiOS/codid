@@ -42,7 +42,7 @@ nixos = ["dbus", "ical"]
 [dependencies]
 futures = "0.3.24"
 config = "0.13.1"
-clap = "3.2.8"
+clap = "3.2.22"
 log = { version = "0.4.17", features = ["kv_unstable"] }
 env_logger = "*"
 structure = "0.1.2"
