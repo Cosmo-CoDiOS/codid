@@ -38,6 +38,8 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: false
+            - name: Install native deps
+              run: sudo apt-get install -y libdbus-1-dev:arm64 pkg-config:arm64 libudev-dev:arm64 libglib2.0-dev:arm64 libudev-dev:amd64 musl-dev:arm64 libdbus-1-dev:amd64 libsqlite3-dev:arm64 libsqlite3-dev:amd64 cmake:amd64
             - name: Run build of project
               uses: actions-rs/cargo@v1
               with:
