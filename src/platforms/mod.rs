@@ -1,3 +1,5 @@
+//! Holder module for different Cosmo ROMs on the MTK chip.
+
 #[cfg(all(feature = "android", target_os = "android"))]
 pub(crate) mod android;
 
