@@ -1,68 +1,125 @@
 name: codid CI release builder
-'on': push
+
+on:
+    workflow_run:
+        workflows: ["CI test workflow"]
+        types: [completed]
+        branches: [main]
+    workflow_dispatch:
+
 env:
-  CARGO_TERM_COLOR: always
+    CARGO_TERM_COLOR: always
 jobs:
-  create-release:
-    if: startsWith(github.ref, 'refs/tags/')
-    name: >-
-      Release builder for Cosmo ROM: ${{ matrix.rom }}, CoDi firmware: ${{
-      matrix.codi }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rom:
-          - android
-          - gemian
-          - postmarketos
-          - sailfish
-          - ubports
-        codi:
-          - stock-codi
-          - codios-codi
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install musl tools
-        run: sudo apt-get install -y musl-tools
-      - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          components: llvm-tools-preview
-          override: true
-          target: aarch64-unknown-linux-musl
-          profile: minimal
-      - name: Install cargo-cross
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
-      - name: Install cargo-binutils
-        uses: actions-rs/install@v0.1
-        with:
-            crate: cargo-binutils
-            version: latest
-            use-tool-cache: true
-      - name: Build project (musl/aarch64) in release mode
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: >-
-            --all --release --locked --verbose  --features=${{ matrix.codi
-            }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
-          use-cross: true
-      - name: Strip the CoDiOS image if the build is a release
-        run: cargo strip --release --bin codid && cargo strip --release --bin codictl
-      - name: Package Release
-        shell: bash
-        run: |
-            tar -czvf /home/runner/work/codid/codid-${{matrix.rom}}-${{matrix.codi}}-release.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codictl
-      - name: Publish release artifacts
-        uses: softprops/action-gh-release@v1
-        with:
-            files: /home/runner/work/codid/codid-${{ matrix.rom }}-${{ matrix.codi }}-release.tgz
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    create-release-linux:
+        if: startsWith(github.ref, 'refs/tags/') ${{ github.event.workflow_run.conclusion == 'success' }}
+        name: >-
+            Release builder for the ${{ matrix.rom }} Linux-based ROM, targeted for the ${{ matrix.codi }} CoDi firmware variant.
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                rom:
+                    - gemian
+                    - postmarketos
+                    - ubports
+                codi:
+                    - stock-codi
+                    - codios-codi
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v2
+            - name: Configure Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  default: true
+                  components: llvm-tools-preview
+                  override: true
+                  target: aarch64-unknown-linux-musl
+                  profile: minimal
+            - name: Install cargo-cross
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Install cargo-binutils
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cargo-binutils
+                  version: latest
+                  use-tool-cache: true
+            - name: Build project for Linux ROMs
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: >-
+                      --all --release --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
+                  use-cross: true
+            - name: Strip the produced binaries.
+              run: cargo strip --release --bin codid && cargo strip --release --bin codictl
+            - name: Package Release
+              shell: bash
+              run: |
+                  tar -czvf /home/runner/work/codid/codid--${{ matrix.rom }}-${{ matrix.codi }}.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codictl
+            - name: Publish release artifacts
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: /home/runner/work/codid/codid-release-${{ matrix.rom }}-${{ matrix.codi }}.tgz
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    create-release-android:
+        if: startsWith(github.ref, 'refs/tags/') ${{ github.event.workflow_run.conclusion == 'success' }}
+        name: >-
+            Release builder for the Android-based ROM, targeted for both CoDi firmware variants.
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                rom:
+                    - android
+                codi:
+                    - stock-codi
+                    - codios-codi
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v2
+            - name: Configure Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  default: true
+                  components: llvm-tools-preview
+                  override: true
+                  target: aarch64-linux-android
+                  profile: minimal
+            - name: Install cargo-cross
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Install cargo-binutils
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cargo-binutils
+                  version: latest
+                  use-tool-cache: true
+            - name: Build project for Linux ROMs
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: >-
+                      --all --release --locked --verbose  --features=stock-codi,codios-codi,${{matrix.rom}} --target=aarch64-linux-android
+                  use-cross: true
+            - name: Strip the produced binaries.
+              run: cargo strip --release --bin codid && cargo strip --release --bin codictl
+            - name: Package Release
+              shell: bash
+              run: |
+                  tar -czvf /home/runner/work/codid/codid--${{ matrix.rom }}.tgz /home/runner/work/codid/codid/target/aarch64-linux-android/release/codid /home/runner/work/codid/codid/target/aarch64-linux-android/release/codictl
+            - name: Publish release artifacts
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: /home/runner/work/codid/codid-release-${{ matrix.rom }}.tgz
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

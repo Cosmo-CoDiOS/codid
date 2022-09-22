@@ -1,57 +1,58 @@
-name: codid CI tests
-'on':
-  - push
-  - pull_request
+name: CI test workflow
+
+on:
+    push:
+    workflow_dispatch:
+    pull_request:
 env:
-  CARGO_TERM_COLOR: always
+    CARGO_TERM_COLOR: always
 jobs:
-  tests:
-    name: Run tests on all Rust channels
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        build:
-          - stable
-          - beta
-          - nightly
-        include:
-          - build: beta
-            rust: beta
-          - build: nightly
-            rust: nightly
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: '${{ matrix.rust || ''stable'' }}'
-          profile: minimal
-          components: clippy
-          override: true
-          target: aarch64-unknown-linux-musl
-          default: true
-      - name: Setup Cargo binary caching/installation action
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
-      - name: Build debug codid/codictl
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: '--all-features --target=aarch64-unknown-linux-musl'
-          use-cross: true
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: '--all-features --target=aarch64-unknown-linux-musl'
-          use-cross: true
-      - name: Run Clippy checks
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: clippy
-          args: '--all-features --target=aarch64-unknown-linux-musl'
+    tests:
+        name: Run tests on various Rust channels, and the supported targets
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                target:
+                    - aarch64-unknown-linux-musl
+                    - x86_64-unknown-linux-musl
+                    - aarch64-linux-android
+                channel:
+                    - stable
+                    - beta
+                    - nightly
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v2
+            - name: Configure Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: ${{ matrix.channel }}
+                  profile: minimal
+                  components: clippy
+                  override: true
+                  target: ${{ matrix.target }}
+                  default: true
+            - name: Install Cross
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Run build of project
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: --all-features --target=${{ matrix.target }}
+                  use-cross: true
+            - name: Run tests on project
+              uses: actions-rs/cargo@v1
+              with:
+                  command: test
+                  args: --all-features --target=${{ matrix.target }}
+                  use-cross: true
+            - name: Run Clippy checks on project
+              uses: actions-rs/cargo@v1
+              with:
+                  command: clippy
+                  args: --all-features --target=${{ matrix.target }}
+                  use-cross: true

@@ -1,57 +1,87 @@
 name: codid CI debug builder
-'on':
-  - push
-  - pull_request
+on:
+    push:
+        branches: ["main"]
 env:
-  CARGO_TERM_COLOR: always
+    CARGO_TERM_COLOR: always
 jobs:
-  build-debug:
-    name: >-
-      Debug builder for Cosmo ROM: ${{ matrix.rom }}, CoDi firmware: ${{
-      matrix.codi }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rom:
-          - android
-          - gemian
-          - postmarketos
-          - sailfish
-          - ubports
-        codi:
-          - stock-codi
-          - codios-codi
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install musl tools
-        run: sudo apt-get install -y musl-tools
-      - name: Setup Cargo binary caching/installation action
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
-      - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          override: true
-          target: aarch64-unknown-linux-musl
-          profile: minimal
-      - name: Build project (musl/aarch64) in debug mode
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: >-
-            --all --locked --verbose  --features=${{ matrix.codi
-            }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
-          use-cross: true
-      - name: Upload [debug] artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'codid-${{ matrix.rom }}-${{ matrix.codi }}-debug'
-          path: |
-            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
-            /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
+    build-debug-linux:
+        name: >-
+            Debug builder for `codid` on the Cosmo Communicator. Target ROM: ${{ matrix.rom }}, and target CoDi variant: ${{ matrix.codi }}
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                rom:
+                    - gemian
+                    - postmarketos
+                    - ubports
+                codi:
+                    - stock-codi
+                    - codios-codi
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v2
+            - name: Install Cross
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Configure Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  default: true
+                  override: true
+                  target: aarch64-unknown-linux-musl
+                  profile: minimal
+            - name: Build project in debug mode
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: >-
+                      --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
+                  use-cross: true
+            - name: Upload produced executables (debug)
+              uses: actions/upload-artifact@v2
+              with:
+                  name: "codid-debug-${{ matrix.rom }}-${{ matrix.codi }}"
+                  path: |
+                      /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
+                      /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
+
+    build-debug-android:
+        name: >-
+            Debug builder for the Android ROMs on Cosmo Communicator, compiled for both CoDi variants.
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v2
+            - name: Initialise Cargo binary caching, and install Cross
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Configure Rust toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  default: true
+                  override: true
+                  target: aarch64-linux-android
+                  profile: minimal
+            - name: Build project in debug mode
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: >-
+                      --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
+                  use-cross: true
+            - name: Upload produced executables
+              uses: actions/upload-artifact@v2
+              with:
+                  name: "codid-android-debug"
+                  path: |
+                      /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codid
+                      /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codictl
