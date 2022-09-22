@@ -40,7 +40,7 @@ postmarketos = ["dbus", "ical"]
 nixos = ["dbus", "ical"]
 
 [dependencies]
-futures = "0.3.21"
+futures = "0.3.24"
 config = "0.13.1"
 clap = "3.2.8"
 log = { version = "0.4.17", features = ["kv_unstable"] }
