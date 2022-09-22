@@ -26,7 +26,7 @@ jobs:
               with:
                   crate: cross
                   version: latest
-                  use-tool-cache: true
+                  use-tool-cache: false
             - name: Configure Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
@@ -62,7 +62,7 @@ jobs:
               with:
                   crate: cross
                   version: latest
-                  use-tool-cache: true
+                  use-tool-cache: false
             - name: Configure Rust toolchain
               uses: actions-rs/toolchain@v1
               with:

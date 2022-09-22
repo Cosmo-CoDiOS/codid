@@ -37,7 +37,7 @@ jobs:
               with:
                   crate: cross
                   version: latest
-                  use-tool-cache: true
+                  use-tool-cache: false
             - name: Run build of project
               uses: actions-rs/cargo@v1
               with:
