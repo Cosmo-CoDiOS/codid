@@ -30,15 +30,18 @@ pub enum ContactsDbusRetrieveError {
 }
 
 pub(crate) type CoDiContacts = Vec<CoDiContact>;
+pub(crate) type CoDiDbusContactsResult =
+    Result<CoDiContacts, ContactsDbusRetrieveError>;
 
 #[allow(unreachable_code)]
 #[allow(dead_code)]
 pub(crate) fn get_dbus_contacts(s: &State) -> CoDiDbusContactsResult {
     trace!("Get connection to session bus...");
 
+    // grab connection to D-Bus *session bus*, not system
     let bus = match Connection::new_session() {
         Ok(res) => res,
-        Err(_e) => {
+        Err(_) => {
             return Err(ContactsDbusRetrieveError::SessionBusConnectFailure)
         }
     };
@@ -52,12 +55,10 @@ pub(crate) fn get_dbus_contacts(s: &State) -> CoDiDbusContactsResult {
         (),
     ) {
         Ok(buses) => buses,
-        Err(_e) => {
-            return Err(ContactsDbusRetrieveError::ListInterfacesFailure)
-        }
+        Err(_) => return Err(ContactsDbusRetrieveError::ListInterfacesFailure),
     };
 
-    let mut selected_bus: String = String::new();
+    let mut selected_bus = String::new();
 
     for potential in buses {
         if potential.contains("org.gnome.evolution.dataserver.AddressBook") {
