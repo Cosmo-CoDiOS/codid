@@ -11,7 +11,7 @@ env:
     CARGO_TERM_COLOR: always
 jobs:
     create-release-linux:
-        if: startsWith(github.ref, 'refs/tags/') ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: startsWith(github.ref, 'refs/tags/') && ${{ github.event.workflow_run.conclusion == 'success' }}
         name: >-
             Release builder for the ${{ matrix.rom }} Linux-based ROM, targeted for the ${{ matrix.codi }} CoDi firmware variant.
         runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     create-release-android:
-        if: startsWith(github.ref, 'refs/tags/') ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: startsWith(github.ref, 'refs/tags/') && ${{ github.event.workflow_run.conclusion == 'success' }}
         name: >-
             Release builder for the Android-based ROM, targeted for both CoDi firmware variants.
         runs-on: ubuntu-latest
