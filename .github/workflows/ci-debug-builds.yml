@@ -49,7 +49,7 @@ jobs:
             }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
           use-cross: true
       - name: Upload [debug] artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: 'codid-${{ matrix.rom }}-${{ matrix.codi }}-debug'
           path: |
