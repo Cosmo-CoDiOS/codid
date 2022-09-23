@@ -20,6 +20,11 @@ jobs:
                     - stable
                     - beta
                     - nightly
+                rom:
+                    - gemian
+                    - postmarketos
+                    - ubports
+                    - android
         steps:
             - name: Checkout sources
               uses: actions/checkout@v3
@@ -42,17 +47,17 @@ jobs:
               uses: actions-rs/cargo@v1
               with:
                   command: build
-                  args: --all-features --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
                   use-cross: true
             - name: Run tests on project
               uses: actions-rs/cargo@v1
               with:
                   command: test
-                  args: --all-features --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
                   use-cross: true
             - name: Run Clippy checks on project
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
-                  args: --all-features --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
                   use-cross: true
