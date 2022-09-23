@@ -63,6 +63,7 @@ jobs:
                   use-cross: true
             - name: Strip the `codictl` binary
               uses: actions-rs/cargo@v1
+              with:
                   command: strip
                   args: --release --bin codictl
                   use-cross: true
@@ -130,6 +131,7 @@ jobs:
                   use-cross: true
             - name: Strip the `codictl` binary
               uses: actions-rs/cargo@v1
+              with:
                   command: strip
                   args: --release --bin codictl
                   use-cross: true
