@@ -15,7 +15,6 @@ jobs:
                     - aarch64-unknown-linux-musl
                 channel:
                     - stable
-                    - nightly
                 rom:
                     - gemian
                     - postmarketos
@@ -63,7 +62,6 @@ jobs:
                   command: clippy
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-
 
     tests-arm64-android:
         name: Run tests on various Rust channels, on Android
@@ -120,4 +118,3 @@ jobs:
                   command: clippy
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-
