@@ -30,11 +30,11 @@ use codid::StateStruct;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn load_config(cfg_file: PathBuf) -> Option<Config> {
+fn load_config(cfg_file: &PathBuf) -> Option<Config> {
     let path = if cfg_file.exists() {
         Path::new(&cfg_file).to_path_buf()
     } else {
-        return None
+        return None;
     };
 
     let cfg = Config::builder()
@@ -47,18 +47,21 @@ fn load_config(cfg_file: PathBuf) -> Option<Config> {
 }
 
 fn get_default_cfg_path() -> Option<PathBuf> {
-    let xdg_dir = PathBuf::from(dirs::config_dir().unwrap().join(PathBuf::from("codid/config.toml")));
-    let android_dir =  PathBuf::from("/data/data/com.github.cosmo_codios.codid.android/config.toml");
+    let xdg_dir = dirs::config_dir()
+        .unwrap()
+        .join(PathBuf::from("codid/config.toml"));
 
-    println!("{:?}", xdg_dir.display());
+    let android_dir = PathBuf::from(
+        "/data/data/com.github.cosmo_codios.codid.android/config.toml",
+    );
 
     if xdg_dir.exists() {
         return Some(xdg_dir);
     } else if android_dir.exists() {
-        return Some(android_dir)
-    } else {
-        return None
+        return Some(android_dir);
     }
+
+    None
 }
 
 fn get_args() -> ArgMatches {
@@ -76,7 +79,6 @@ fn get_args() -> ArgMatches {
         .get_matches()
 }
 
-
 fn main() {
     let args = get_args();
     env_logger::init();
@@ -88,24 +90,20 @@ fn main() {
         None => get_default_cfg_path().expect("Unable to get configuration path from default logic. Likelihood is that config doesn't exist."),
     };
 
-    let cfg = load_config(cfg_path)
+    let cfg = load_config(&cfg_path)
         .expect("Error parsing configuration file. Check the validity.");
 
     /* Initialise state */
-    let state = Arc::new(Mutex::new(StateStruct {
-        cfg: cfg.clone(),
-    }));
+    let state = Arc::new(Mutex::new(StateStruct { cfg }));
 
-    trace!(
-        "Loaded configuration into shared State."
-    );
+    trace!("Loaded configuration into shared State.");
 
     // handle subcommands
 
     match args.subcommand() {
         Some(("spawn", _)) => {
             debug!("Handing over to daemon module...");
-            start(state.clone());
+            start(&state);
         }
         _ => {
             unreachable!(); // this shouldn't be reached
