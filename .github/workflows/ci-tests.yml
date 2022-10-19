@@ -48,42 +48,42 @@ jobs:
                   version: latest
                   use-tool-cache: true
             - name: Run build of project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android'
+              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: build
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run build of project on Android target
-              if: matrix.target == 'aarch64-linux-android'
+              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: build
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run tests on project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android'
+              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: test
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run tests on project on Android targets
-              if: matrix.target == 'aarch64-linux-android'
+              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: test
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run Clippy checks on project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android'
+              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run Clippy checks on project on Android targets
-              if: matrix.target == 'aarch64-linux-android'
+              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
               uses: actions-rs/cargo@v1
               with:
                   command: clippy

@@ -70,7 +70,6 @@ fn get_args() -> ArgMatches {
         .arg(Arg::new("config")
             .long("config")
             .short('c')
-            .takes_value(true)
             .help("Path to TOML configuration"))
         .subcommand(Command::new("spawn")
             .about("Starts the daemon."))
@@ -84,7 +83,7 @@ fn main() {
 
     /* load config file */
 
-    let cfg_path = match args.value_of("config") {
+    let cfg_path = match args.get_one::<PathBuf>("config") {
         Some(cfg_path) => PathBuf::from(cfg_path),
         None => get_default_cfg_path().expect("Unable to get configuration path from default logic. Likelihood is that config doesn't exist."),
     };
