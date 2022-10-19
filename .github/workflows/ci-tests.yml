@@ -6,14 +6,13 @@ on:
 env:
     CARGO_TERM_COLOR: always
 jobs:
-    tests:
+    tests-arm64-linux:
         name: Run tests on various Rust channels, and the supported targets
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 target:
                     - aarch64-unknown-linux-musl
-                    - aarch64-linux-android
                 channel:
                     - stable
                     - nightly
@@ -21,6 +20,62 @@ jobs:
                     - gemian
                     - postmarketos
                     - ubports
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v3
+            - name: "Cache Rust assets"
+              id: rust-cache
+              uses: Swatinem/rust-cache@v2
+              with:
+                  cache-on-failure: true
+            - name: Configure Rust
+              if: steps.rust-cache.outputs.cache-hit != 'true'
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: ${{ matrix.channel }}
+                  profile: minimal
+                  components: clippy
+                  override: true
+                  target: ${{ matrix.target }}
+                  default: true
+            - name: Install Cross
+              if: steps.rust-cache.outputs.cache-hit != 'true'
+              uses: actions-rs/install@v0.1
+              with:
+                  crate: cross
+                  version: latest
+                  use-tool-cache: true
+            - name: Run build of project (Linux)
+              uses: actions-rs/cargo@v1
+              with:
+                  command: build
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  use-cross: true
+            - name: Run tests on project (Linux)
+              uses: actions-rs/cargo@v1
+              with:
+                  command: test
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  use-cross: true
+            - name: Run Clippy checks on project (Linux)
+              uses: actions-rs/cargo@v1
+              with:
+                  command: clippy
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  use-cross: true
+
+
+    tests-arm64-android:
+        name: Run tests on various Rust channels, on Android
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                target:
+                    - aarch64-linux-android
+                channel:
+                    - stable
+                    - nightly
+                rom:
                     - android
         steps:
             - name: Checkout sources
@@ -47,45 +102,22 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: true
-            - name: Run build of project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
+            - name: Run build of project (Android)
               uses: actions-rs/cargo@v1
               with:
                   command: build
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-            - name: Run build of project on Android target
-              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
-              uses: actions-rs/cargo@v1
-              with:
-                  command: build
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
-            - name: Run tests on project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
+            - name: Run tests on project (Android)
               uses: actions-rs/cargo@v1
               with:
                   command: test
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-            - name: Run tests on project on Android targets
-              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
-              uses: actions-rs/cargo@v1
-              with:
-                  command: test
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
-            - name: Run Clippy checks on project on non-Android targets
-              if: matrix.target != 'aarch64-linux-android' && matrix.rom != 'android'
+            - name: Run Clippy checks on project (Android)
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-            - name: Run Clippy checks on project on Android targets
-              if: matrix.target == 'aarch64-linux-android' && matrix.rom == 'android'
-              uses: actions-rs/cargo@v1
-              with:
-                  command: clippy
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
+
