@@ -6,7 +6,6 @@
     missing_debug_implementations,
     missing_docs,
     clippy::all,
-    clippy::pedantic,
     trivial_casts,
     trivial_numeric_casts,
     unsafe_code,
@@ -56,47 +55,13 @@ pub mod rpc;
 pub mod daemon {
     //! This is the module for the `codid` daemon.
 
-    use std::path::Path;
-    use std::thread;
-
-    use crate::control_loop::{enter_control_loop, ControlLoopError};
-
     use super::State;
 
     /// Daemon entrypoint
-    pub fn start(s: State) {
+    pub fn start(_s: &State) {
         info!("Hello, Cosmo!");
-
-        debug!("Initializing daemon control loop...");
-
-        let path = Path::new(
-            s.clone()
-                .lock()
-                .expect("Unable to get a lock on the Config.")
-                .cfg
-                .get("rpc_socket")
-                .unwrap_or("/tmp/codid.sock"),
-        );
-
-        // LAUNCH THREAD
-        let ctrl_loop_thread = thread::Builder::new()
-            .name("control_loop".to_string())
-            .spawn(move || {
-                match enter_control_loop(&s, &path.clone()) {
-                    Ok(_) => (),
-                    Err(e) => match e {
-                        ControlLoopError::ServerStartError(_path) => {
-                            error!("Could not start server.");
-                            std::process::exit(1);
-                        }
-                    },
-                }
-            });
-
 
         info!("The Cosmo-CoDiOS daemon has now started.");
         info!("Running until asked to stop...");
-
-        ctrl_loop_thread.unwrap().join().unwrap();
     }
 }
