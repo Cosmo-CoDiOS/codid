@@ -51,7 +51,7 @@ jobs:
                       --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
             - name: Update nightly release
-              uses: eine/tip@master
+              uses: pyTooling/Actions/releaser@r0
               with:
                   tag: nightly-${{ matrix.rom }}-${{ matrix.codi }}
                   rm: true
@@ -96,7 +96,7 @@ jobs:
                       --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
                   use-cross: true
             - name: Update nightly release
-              uses: eine/tip@master
+              uses: pyTooling/Actions/releaser@r0
               with:
                   tag: nightly-android-${{ matrix.codi }}
                   rm: true
