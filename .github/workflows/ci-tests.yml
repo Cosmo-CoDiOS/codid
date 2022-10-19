@@ -7,7 +7,7 @@ env:
     CARGO_TERM_COLOR: always
 jobs:
     tests-arm64-linux:
-        name: Run tests on various Rust channels, and the supported targets
+        name: Run tests on the supported ROMs and targets (excl. Android)
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -64,7 +64,7 @@ jobs:
                   use-cross: true
 
     tests-arm64-android:
-        name: Run tests on various Rust channels, on Android
+        name: Run tests on Android
         runs-on: ubuntu-latest
         strategy:
             matrix:
