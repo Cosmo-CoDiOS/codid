@@ -61,6 +61,7 @@ jobs:
                       /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
 
     build-debug-android:
+        if: ${{ false }}
         name: >-
             Debug builder for the Android ROMs on Cosmo Communicator, compiled for both CoDi variants.
         runs-on: ubuntu-latest
@@ -88,6 +89,7 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: false
+
             - name: Build project in debug mode
               uses: actions-rs/cargo@v1
               with:
