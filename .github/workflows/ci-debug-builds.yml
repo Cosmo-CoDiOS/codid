@@ -1,7 +1,7 @@
 name: codid CI debug builder
 on:
-    push:
-        branches: ["main"]
+    schedule:
+        - cron: "0 0 */2 * *"
 env:
     CARGO_TERM_COLOR: always
 jobs:
@@ -42,11 +42,13 @@ jobs:
                   args: >-
                       --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
-            - name: Upload produced executables (debug)
-              uses: actions/upload-artifact@v3
+            - name: Update nightly release
+              uses: eine/tip@master
               with:
-                  name: "codid-debug-${{ matrix.rom }}-${{ matrix.codi }}"
-                  path: |
+                  tag: nightly-${{ matrix.rom }}-${{ matrix.codi }}
+                  rm: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  files: |
                       /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
                       /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
 
@@ -78,10 +80,12 @@ jobs:
                   args: >-
                       --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
                   use-cross: true
-            - name: Upload produced executables
-              uses: actions/upload-artifact@v3
+            - name: Update nightly release
+              uses: eine/tip@master
               with:
-                  name: "codid-android-debug"
-                  path: |
+                  tag: nightly-android-${{ matrix.codi }}
+                  rm: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  files: |
                       /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codid
                       /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codictl

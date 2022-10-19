@@ -1,5 +1,4 @@
 name: CI test workflow
-
 on:
     push:
     workflow_dispatch:
@@ -47,17 +46,17 @@ jobs:
               uses: actions-rs/cargo@v1
               with:
                   command: build
-                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run tests on project
               uses: actions-rs/cargo@v1
               with:
                   command: test
-                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
             - name: Run Clippy checks on project
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
-                  args: --features=${{ matrix.rom }},stock-codi,codi-codios --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
