@@ -8,8 +8,8 @@ use std::time::Duration;
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 
-/// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting CoDi. This is done
-/// forcefully, and by doing it this way, CoDi has no way to power down itself. When CoDiOS is
+/// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting `CoDi`. This is done
+/// forcefully, and by doing it this way, `CoDi` has no way to power down itself. When `CoDiOS` is
 /// running, as discovered during startup of the CLI, it will accept a 'safe power down' command to
 /// avoid corruption to flash.
 pub fn hw_reset_stm32() {
@@ -48,7 +48,8 @@ pub fn hw_reset_stm32() {
 }
 
 /// `stm32_bootloader_dl` accepts one parameter (`in_out`) of the `bool` type. If it's `true`, then
-/// it'll flip the GPIO pins that tell the STM32 to reboot to the bootloader. Likewise, if `in_out` is `false`, then it'll flip the GPIO pins the other way to reboot to 'normal mode' of the STM32 firmware.
+/// it'll flip the GPIO pins that tell the STM32 to reboot to the bootloader. Likewise, if `in_out` is `false`,
+/// then it'll flip the GPIO pins the other way to reboot to 'normal mode' of the STM32 firmware.
 pub fn stm32_bootloader_dl(in_out: bool) {
     trace!("Open fd for STM32 reset proc");
 

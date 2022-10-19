@@ -2,7 +2,7 @@ use crate::State;
 use std::path::Path;
 use std::result::Result;
 
-use jsonrpc_ipc_server::jsonrpc_core::*;
+use jsonrpc_ipc_server::jsonrpc_core::IoHandler;
 use jsonrpc_ipc_server::ServerBuilder;
 
 #[allow(clippy::module_name_repetitions)]
@@ -26,5 +26,6 @@ pub(crate) fn enter_control_loop<'a>(
         Err(_e) => return Err(ControlLoopError::ServerStartError(sock)),
     };
 
-    Ok(server.wait())
+    server.wait();
+    Ok(())
 }
