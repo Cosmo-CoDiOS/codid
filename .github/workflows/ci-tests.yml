@@ -25,8 +25,6 @@ jobs:
             - name: "Cache Rust assets"
               id: rust-cache
               uses: Swatinem/rust-cache@v2
-              with:
-                  cache-on-failure: true
             - name: Configure Rust
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1
@@ -81,8 +79,6 @@ jobs:
             - name: "Cache Rust assets"
               id: rust-cache
               uses: Swatinem/rust-cache@v2
-              with:
-                  cache-on-failure: true
             - name: Configure Rust
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1

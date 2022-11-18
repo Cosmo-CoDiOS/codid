@@ -25,8 +25,6 @@ jobs:
             - name: Cache Rust assets
               id: rust-cache
               uses: Swatinem/rust-cache@v2
-              with:
-                  cache-on-failure: true
             - name: Configure Rust toolchain
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1
@@ -50,15 +48,6 @@ jobs:
                   args: >-
                       --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
-            - name: Update nightly release
-              uses: pyTooling/Actions/releaser@r0
-              with:
-                  tag: nightly-${{ matrix.rom }}-${{ matrix.codi }}
-                  rm: true
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  files: |
-                      /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codid
-                      /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/debug/codictl
 
     build-debug-android:
         if: ${{ false }}
@@ -71,8 +60,6 @@ jobs:
             - name: Cache Rust assets
               id: rust-cache
               uses: Swatinem/rust-cache@v2
-              with:
-                  cache-on-failure: true
             - name: Configure Rust toolchain
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1
@@ -89,7 +76,6 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: false
-
             - name: Build project in debug mode
               uses: actions-rs/cargo@v1
               with:
@@ -97,12 +83,3 @@ jobs:
                   args: >-
                       --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
                   use-cross: true
-            - name: Update nightly release
-              uses: pyTooling/Actions/releaser@r0
-              with:
-                  tag: nightly-android-${{ matrix.codi }}
-                  rm: true
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  files: |
-                      /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codid
-                      /home/runner/work/codid/codid/target/aarch64-linux-android/debug/codictl
