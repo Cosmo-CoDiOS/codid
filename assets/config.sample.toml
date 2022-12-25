@@ -1,2 +1,2 @@
-serial_port = "/dev/ttyUSB0"
+serial_port = "/dev/ttyS1"
 rpc_socket = "/run/user/1000/codi.sock"
