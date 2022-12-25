@@ -1,28 +1,42 @@
 //! Modules for interfacing with the `/proc` FS special files provided by the Cosmo Linux kernel.
 
-use std::fmt;
-use std::error;
+use thiserror::Error;
+use anyhow::Result;
 use std::fs;
-use std::io::Write;
+use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
 
-#[derive(Debug)]
+/// `ProcUtilError` is an enum of different `Error` types and reasons.
+#[derive(Debug, Error)]
 pub enum ProcUtilError {
-    Stm32ResetErr(std::io::Error),
-    Stm32SetDownloadErr(std::io::Error),
-    Stm32ResetDownloadErr(std::io::Error),
-}
-
-impl error::Error for ProcUtilError {}
-
-impl fmt::Display for ProcUtilError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &*self {
-            ProcUtilError::Stm32SetDownloadErr(_e) => write!(f, "Error toggling STM32 into download mode."),
-            ProcUtilError::Stm32ResetDownloadErr(_e) => write!(f, "Error toggling STM32 out of download mode."),
-            ProcUtilError::Stm32ResetErr(_e) => write!(f, "Error resetting the STM32.")
-        }
+    /// `Stm32ResetErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 reset file.
+    #[error("Unable to reset the STM32.")]
+    Stm32ResetErr {
+        /// Source of the error.
+        #[source]
+        source: io::Error
+    },
+    /// `Stm32SetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
+    #[error("Unable to set the STM32 into Download mode.")]
+    Stm32SetDownloadErr {
+        /// Source of the error.
+        #[source]
+        source: io::Error
+    },
+    /// `Stm32ResetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
+    #[error("Unable to reset the STM32 out of Download mode.")]
+    Stm32ResetDownloadErr {
+        /// Source of the error.
+        #[source]
+        source: io::Error
+    },
+    /// `Stm32ProcIOError` is an error returned when setting up the file descriptor fails.
+    #[error("Unable to setup a file descriptor for special /proc file.")]
+    Stm32ProcIOError {
+        /// Source of the error.
+        #[source]
+        source: io::Error
     }
 }
 
@@ -43,22 +57,16 @@ pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_RESET_STM32_PROC)
-        .unwrap();
+        .map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
 
-    match proc.write_all("1".as_bytes()) {
-        Ok(_) => (),
-        Err(e) => return Err(ProcUtilError::Stm32ResetErr(e)),
-    }
+    proc.write_all("1".as_bytes()).map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
 
     debug!("Wait a little while....");
     thread::sleep(Duration::from_secs(2));
 
     info!("Starting CoDi again, please wait a moment...");
 
-    match proc.write_all("0".as_bytes()) {
-        Ok(_) => (),
-        Err(e) => return Err(ProcUtilError::Stm32ResetErr(e)),
-    }
+    proc.write_all("0".as_bytes()).map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
 
     debug!("Wait for CoDi to start....");
     thread::sleep(Duration::from_secs(4));
@@ -87,24 +95,15 @@ pub fn stm32_bootloader_dl(in_out: bool) -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_STM32_DL_FW_PROC)
-        .unwrap();
+        .map_err(|source| ProcUtilError::Stm32ProcIOError { source })?;
 
     if in_out {
         // true, we're uploading (downloading from CoDi's PoV) firmware
-        match proc.write_all("1".as_bytes()) {
-            Ok(_) => (),
-            Err(e) => return Err(ProcUtilError::Stm32SetDownloadErr(e)),
-        }
-
-        proc.write_all("1".as_ref())
-            .expect("Unable to switch CoDi into DL mode!");
+        proc.write_all("1".as_bytes()).map_err(|source| ProcUtilError::Stm32SetDownloadErr { source })?;
     } else {
         // false, we're not uploading to CoDi
         // reset to cmd mode
-        match proc.write_all("0".as_bytes()) {
-            Ok(_) => (),
-            Err(e) => return Err(ProcUtilError::Stm32ResetDownloadErr(e)),
-        }
+        proc.write_all("0".as_bytes()).map_err(|source| ProcUtilError::Stm32SetDownloadErr { source })?;
     }
 
     Ok(())
