@@ -54,7 +54,7 @@ jobs:
                   command: test
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-            - uses: actions-rs/clippy-check@v1
+            - uses: actions-rs-plus/clippy-check@main
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
@@ -105,7 +105,7 @@ jobs:
                   command: test
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
                   use-cross: true
-            - uses: actions-rs/clippy-check@v1
+            - uses: actions-rs-plus/clippy-check@main
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
