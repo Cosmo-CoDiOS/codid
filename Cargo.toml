@@ -82,7 +82,7 @@ optional = true
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 
-[dependencies.codi_bootload_protocol]
+[dependencies.codi_boot_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 
