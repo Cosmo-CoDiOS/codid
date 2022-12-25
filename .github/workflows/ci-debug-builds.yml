@@ -1,12 +1,12 @@
 name: codid CI debug builder
 on:
     workflow_dispatch:
-    schedule:
-        - cron: "0 0 */2 * *"
+#    schedule:
+#        - cron: "0 0 */2 * *"
 env:
     CARGO_TERM_COLOR: always
 jobs:
-    build-debug-linux:
+    build-debug-linux-arm64:
         name: >-
             Debug builder for `codid` on the Cosmo Communicator. Target ROM: ${{ matrix.rom }}, and target CoDi variant: ${{ matrix.codi }}
         runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
                       --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
                   use-cross: true
 
-    build-debug-android:
+    build-debug-android-arm64:
         if: ${{ false }}
         name: >-
             Debug builder for the Android ROMs on Cosmo Communicator, compiled for both CoDi variants.
