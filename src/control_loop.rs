@@ -4,13 +4,13 @@ use crate::State;
 use std::path::Path;
 
 use anyhow::Result;
-use thiserror::Error;
-use std::io;
 use jsonrpc_ipc_server::jsonrpc_core::IoHandler;
 use jsonrpc_ipc_server::ServerBuilder;
+use std::io;
+use thiserror::Error;
 
 /// `ControlLoopError` is an enum of different `Error` variants, backed by `anyhow` and `thiserror`.
-#[allow(clippy::module_name_repetitions)]
+#[allow(clippy::module_name_repetitions, clippy::enum_variant_names)]
 #[derive(Debug, Error)]
 pub enum ControlLoopError {
     /// Returned when the JSON-RPC method called encounters an error.
@@ -24,8 +24,8 @@ pub enum ControlLoopError {
     #[error("Server error")]
     ServerError {
         #[from]
-        source: io::Error
-    }
+        source: io::Error,
+    },
 }
 
 type ControlLoopResult = Result<(), ControlLoopError>;
