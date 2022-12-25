@@ -18,6 +18,8 @@
 #[macro_use]
 extern crate log;
 
+use anyhow::Context;
+
 use std::env;
 use std::sync::{Arc, Mutex};
 
@@ -46,7 +48,7 @@ fn get_args() -> ArgMatches {
         .get_matches()
 }
 
-fn main() {
+fn main() -> Result<(), anyhow::Error> {
     let args = get_args();
     env_logger::init();
 
@@ -58,17 +60,23 @@ fn main() {
     match args.subcommand() {
         Some(("reset", _)) => {
             debug!("Handing over to daemon module...");
-            codid::platforms::common::proc::hw_reset_stm32();
+            codid::platforms::common::proc::hw_reset_stm32()
+                .context("Unable to reset the STM32 at this time.")?;
         }
         Some(("enter-bootloader", _)) => {
-            codid::platforms::common::proc::stm32_bootloader_dl(true);
+            codid::platforms::common::proc::stm32_bootloader_dl(true).context(
+                "Unable to tell the STM32 to enter into download mode.",
+            )?;
         }
         Some(("exit-bootloader", _)) => {
-            codid::platforms::common::proc::stm32_bootloader_dl(false);
+            codid::platforms::common::proc::stm32_bootloader_dl(false)
+                .context("Unable to tell the STM32 to exit download mode.")?;
         }
 
         _ => {
             unreachable!(); // this shouldn't be reached
         }
     }
+
+    Ok(())
 }
