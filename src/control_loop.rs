@@ -30,9 +30,9 @@ pub enum ControlLoopError {
 
 type ControlLoopResult = Result<(), ControlLoopError>;
 
-pub(crate) fn enter_control_loop<'a>(
+pub(crate) fn enter_control_loop(
     _s: &State,
-    sock: &'a Path,
+    sock: &Path,
 ) -> ControlLoopResult {
     debug!("Entering command loop...");
 
