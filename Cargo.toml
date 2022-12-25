@@ -49,6 +49,8 @@ jsonrpc-core = "18.0.0"
 jsonrpc-ipc-server = "18.0.0"
 jsonrpc-derive = "18.0.0"
 dirs = "4.0.0"
+thiserror = "1.0.38"
+anyhow = "1.0.68"
 
 [dependencies.dbus]
 version = "0.9.5"
