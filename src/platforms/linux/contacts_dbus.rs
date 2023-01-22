@@ -4,7 +4,6 @@
 
 use std::io::BufReader;
 
-use anyhow::Result;
 use thiserror::Error;
 use zbus::blocking::{Connection, Proxy};
 use zbus::Error as ZbusError;
@@ -27,8 +26,8 @@ impl CoDiContactNumber {
 
 #[derive(Clone, Debug)]
 pub(crate) struct CoDiContact {
-    pub(crate) name: String,
-    pub(crate) phone: Vec<CoDiContactNumber>,
+    name: String,
+    phone: Vec<CoDiContactNumber>,
 }
 
 impl CoDiContact {
@@ -61,53 +60,58 @@ pub(crate) enum DbusContactsError {
 
 pub(crate) type CoDiContacts = Vec<CoDiContact>;
 pub(crate) type CoDiDbusContactsResult =
-Result<CoDiContacts, DbusContactsError>;
+    anyhow::Result<CoDiContacts, DbusContactsError>;
 
 pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
-    trace!("Get connection to session bus...");
-
     let bus = Connection::session()
         .map_err(|e| DbusContactsError::SessionBusConnectFailure(e))?;
 
-    let all_ifaces = Proxy::new(&bus, "org.freedesktop.DBus",
-                                "/",
-                                "org.freedesktop.DBus")
+    let all_ifaces =
+        Proxy::new(&bus, "org.freedesktop.DBus", "/", "org.freedesktop.DBus")
+            .map_err(|e| DbusContactsError::EdsInterfaceSearchFailure(e))?;
+
+    let dbus_all_names: Vec<String> = all_ifaces
+        .call("ListActivatableNames", &())
         .map_err(|e| DbusContactsError::EdsInterfaceSearchFailure(e))?;
 
-    let dbus_all_names: Vec<String> = all_ifaces.call("ListActivatableNames",
-                                                      &())
-        .map_err(|e| DbusContactsError::EdsInterfaceSearchFailure(e))?;
-
-    if !dbus_all_names.contains(&String::from("org.gnome.evolution.dataserver.AddressBook")) {
+    let iface = if let Some(x) = dbus_all_names
+        .into_iter()
+        .find(|s| s.contains("org.gnome.evolution.dataserver.AddressBook"))
+    {
+        x
+    } else {
         return Err(DbusContactsError::EdsInterfaceMissingFailure);
-    }
+    };
 
-    let address_book_bus = "org.gnome.evolution.dataserver.AddressBook";
+    let mut proxy = Proxy::new(
+        &bus,
+        iface,
+        "/org/gnome/evolution/dataserver/AddressBookFactory",
+        "org.gnome.evolution.dataserver.AddressBookFactory",
+    )
+    .map_err(|e| DbusContactsError::AddressBookOpenFailure(e))?;
 
-    let mut proxy = Proxy::new(&bus, address_book_bus,
-                               "/org/gnome/evolution/dataserver/AddressBookFactory",
-                               "org.gnome.evolution.dataserver.AddressBookFactory")
+    let (obj_path, eds_bus): (String, String) = proxy
+        .call("OpenAddressBook", &("system-address-book",))
         .map_err(|e| DbusContactsError::AddressBookOpenFailure(e))?;
 
-    let (obj_path, eds_bus): (String, String) = proxy.call("OpenAddressBook",
-                                                           &("system-address-book", ))
-        .map_err(|e| DbusContactsError::AddressBookOpenFailure(e))?;
+    proxy = Proxy::new(
+        &bus,
+        eds_bus,
+        obj_path,
+        "org.gnome.evolution.dataserver.AddressBook",
+    )
+    .map_err(|e| DbusContactsError::AddressBookOpenFailure(e))?;
 
-    proxy = Proxy::new(&bus, eds_bus, obj_path,
-                       "org.gnome.evolution.dataserver.AddressBook")
-        .map_err(|e| DbusContactsError::AddressBookOpenFailure(e))?;
-
-    let (contacts, ): (Vec<String>, ) = proxy.call(
-        "GetContactListUids",
-        &("", ), )
+    let contacts: Vec<String> = proxy
+        .call("GetContactListUids", &(""))
         .map_err(|e| DbusContactsError::GetContactsFailure(e))?;
 
     let mut codi_contacts: Vec<CoDiContact> = Vec::new();
 
     for contact_id in contacts {
-        let (contact, ): (String, ) = proxy.call(
-            "GetContact",
-            &(contact_id, ), )
+        let (contact,): (String,) = proxy
+            .call("GetContact", &(contact_id,))
             .map_err(|e| DbusContactsError::GetContactFailure(e))?;
 
         let reader = ical::VcardParser::new(BufReader::new(contact.as_bytes()));
@@ -115,8 +119,6 @@ pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
         let mut contact_name = String::new();
         let mut contact_numbers: Vec<CoDiContactNumber> = Vec::new();
         'vcardloop: for line in reader {
-            println!("{:?}", line);
-
             let line = match line {
                 Ok(res) => res,
                 _ => continue 'vcardloop,

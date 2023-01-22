@@ -22,18 +22,12 @@ pub enum ControlLoopError {
     SocketPathTransformError,
     /// Generic error, derived from `std::io::Error` when the server fails to start.
     #[error("Server error")]
-    ServerError {
-        #[from]
-        source: io::Error,
-    },
+    ServerError(#[from] io::Error),
 }
 
 type ControlLoopResult = Result<(), ControlLoopError>;
 
-pub(crate) fn enter_control_loop(
-    _s: &State,
-    sock: &Path,
-) -> ControlLoopResult {
+pub(crate) fn enter_control_loop(_s: &State, sock: &Path) -> ControlLoopResult {
     debug!("Entering command loop...");
 
     let io = IoHandler::new();
@@ -44,7 +38,7 @@ pub(crate) fn enter_control_loop(
 
     let server = ServerBuilder::new(io)
         .start(sock_path_str)
-        .map_err(|source| ControlLoopError::ServerError { source })?;
+        .map_err(|source| ControlLoopError::ServerError(source))?;
 
     server.wait();
     Ok(())
