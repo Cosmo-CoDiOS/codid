@@ -81,7 +81,7 @@ git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 
 [target.'cfg(target_os = "android")'.dependencies]
-android_logger = { version = "0.12", optional = true }
+android_logger = { version = "0.13", optional = true }
 
 [profile.dev]
 lto = true
