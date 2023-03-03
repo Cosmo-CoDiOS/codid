@@ -18,7 +18,7 @@
 #[macro_use]
 extern crate log;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 // check for CoDiOS or stock CoDi feature enablement
 #[cfg(not(any(feature = "stock-codi", feature = "codios-codi")))]
@@ -29,7 +29,9 @@ compile_error!("ONE variant of CoDi required as a feature, please respecify!");
     feature = "android",
     feature = "ubports",
     feature = "gemian",
-    feature = "postmarketos"
+    feature = "postmarketos",
+    feature = "sailfish",
+    feature = "nixos"
 )))]
 compile_error!(
     "At least ONE Cosmo ROM is required as a feature, please specify!"
@@ -45,10 +47,12 @@ pub struct StateStruct {
     pub cfg: config::Config,
 }
 
-/// `State` defines a custom type that holds `StateStruct` in an `Arc<Mutex<T>>`.
-pub type State = Arc<Mutex<StateStruct>>;
+/// `State` defines a custom type that holds `StateStruct` in an `Mutex<T>`.
+pub type State = Mutex<StateStruct>;
 
-pub(crate) mod control_loop;
+pub(crate) mod codid_control_loop;
+pub(crate) mod codid_event_loop;
+pub(crate) mod codi_event_loop;
 pub mod platforms;
 pub mod rpc;
 
