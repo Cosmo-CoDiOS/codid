@@ -36,6 +36,8 @@ android = ["android_logger"]
 ubports = ["zbus", "zvariant", "ical"]
 gemian = ["zbus", "zvariant", "ical"]
 postmarketos = ["zbus", "zvariant", "ical"]
+sailfish = ["zbus", "zvariant", "ical"]
+nixos = ["zbus", "zvariant", "ical"]
 
 [dependencies]
 futures = "0.3.25"
