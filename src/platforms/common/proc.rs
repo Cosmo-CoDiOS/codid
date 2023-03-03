@@ -13,32 +13,16 @@ use thiserror::Error;
 pub enum ProcUtilError {
     /// `Stm32ResetErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 reset file.
     #[error("Unable to reset the STM32.")]
-    Stm32ResetErr {
-        /// Source of the error.
-        #[source]
-        source: io::Error,
-    },
+    Stm32ResetErr(#[source] io::Error),
     /// `Stm32SetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
     #[error("Unable to set the STM32 into Download mode.")]
-    Stm32SetDownloadErr {
-        /// Source of the error.
-        #[source]
-        source: io::Error,
-    },
+    Stm32SetDownloadErr(#[source] io::Error),
     /// `Stm32ResetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
     #[error("Unable to reset the STM32 out of Download mode.")]
-    Stm32ResetDownloadErr {
-        /// Source of the error.
-        #[source]
-        source: io::Error,
-    },
+    Stm32ResetDownloadErr(#[source] io::Error),
     /// `Stm32ProcIOError` is an error returned when setting up the file descriptor fails.
     #[error("Unable to setup a file descriptor for special /proc file.")]
-    Stm32ProcIOError {
-        /// Source of the error.
-        #[source]
-        source: io::Error,
-    },
+    Stm32ProcIOError(#[source] io::Error),
 }
 
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
@@ -58,10 +42,10 @@ pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_RESET_STM32_PROC)
-        .map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
+        .map_err(ProcUtilError::Stm32ResetErr)?;
 
     proc.write_all("1".as_bytes())
-        .map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
+        .map_err(ProcUtilError::Stm32ResetErr)?;
 
     debug!("Wait a little while....");
     thread::sleep(Duration::from_secs(2));
@@ -69,7 +53,7 @@ pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
     info!("Starting CoDi again, please wait a moment...");
 
     proc.write_all("0".as_bytes())
-        .map_err(|source| ProcUtilError::Stm32ResetErr { source })?;
+        .map_err(ProcUtilError::Stm32ResetErr)?;
 
     debug!("Wait for CoDi to start....");
     thread::sleep(Duration::from_secs(4));
@@ -98,17 +82,17 @@ pub fn stm32_bootloader_dl(in_out: bool) -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_STM32_DL_FW_PROC)
-        .map_err(|source| ProcUtilError::Stm32ProcIOError { source })?;
+        .map_err(ProcUtilError::Stm32ProcIOError)?;
 
     if in_out {
         // true, we're uploading (downloading from CoDi's PoV) firmware
         proc.write_all("1".as_bytes())
-            .map_err(|source| ProcUtilError::Stm32SetDownloadErr { source })?;
+            .map_err(ProcUtilError::Stm32SetDownloadErr)?;
     } else {
         // false, we're not uploading to CoDi
         // reset to cmd mode
         proc.write_all("0".as_bytes())
-            .map_err(|source| ProcUtilError::Stm32SetDownloadErr { source })?;
+            .map_err(ProcUtilError::Stm32SetDownloadErr)?;
     }
 
     Ok(())

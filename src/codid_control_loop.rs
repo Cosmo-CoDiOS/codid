@@ -39,7 +39,7 @@ pub(crate) fn enter_control_loop(_s: &State, sock: &Path) -> ControlLoopResult {
 
     let server = ServerBuilder::new(io)
         .start(sock_path_str)
-        .map_err(|e| ControlLoopError::ServerError(e))?;
+        .map_err(ControlLoopError::ServerError)?;
 
     server.wait();
     Ok(())
