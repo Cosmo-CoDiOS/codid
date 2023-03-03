@@ -20,7 +20,7 @@ extern crate log;
 
 use std::env;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use clap::{Arg, ArgMatches, Command};
 use config::{Config, Environment, File};
@@ -94,7 +94,7 @@ fn main() {
         .expect("Error parsing configuration file. Check the validity.");
 
     /* Initialise state */
-    let state = Arc::new(Mutex::new(StateStruct { cfg }));
+    let state = Mutex::new(StateStruct { cfg });
 
     trace!("Loaded configuration into shared State.");
 
