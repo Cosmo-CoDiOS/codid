@@ -50,9 +50,9 @@ pub struct StateStruct {
 /// `State` defines a custom type that holds `StateStruct` in an `Mutex<T>`.
 pub type State = Mutex<StateStruct>;
 
+pub(crate) mod codi_event_loop;
 pub(crate) mod codid_control_loop;
 pub(crate) mod codid_event_loop;
-pub(crate) mod codi_event_loop;
 pub mod platforms;
 pub mod rpc;
 
