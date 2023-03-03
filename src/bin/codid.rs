@@ -39,7 +39,7 @@ fn load_config(cfg_file: &PathBuf) -> Option<Config> {
 
     let cfg = Config::builder()
         .add_source(File::from(path))
-        .add_source(Environment::with_prefix("CODI"))
+        .add_source(Environment::with_prefix("CODID"))
         .build()
         .expect("Unable to construct Config struct");
 
