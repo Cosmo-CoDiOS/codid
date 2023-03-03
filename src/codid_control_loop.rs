@@ -44,3 +44,7 @@ pub(crate) fn enter_control_loop(_s: &State, sock: &Path) -> ControlLoopResult {
     server.wait();
     Ok(())
 }
+
+fn return_populated_hdlr(io: &mut IoHandler) -> &mut IoHandler {
+    io
+}
