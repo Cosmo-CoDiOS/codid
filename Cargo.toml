@@ -40,9 +40,9 @@ sailfish = ["zbus", "zvariant", "ical"]
 nixos = ["zbus", "zvariant", "ical"]
 
 [dependencies]
-futures = "0.3.25"
+futures = "0.3.26"
 config = "0.13.3"
-clap = "4.1.1"
+clap = "4.1.8"
 log = { version = "0.4.17", features = ["kv_unstable"] }
 env_logger = "*"
 structure = "0.1.2"
@@ -52,10 +52,10 @@ jsonrpc-ipc-server = "18.0.0"
 jsonrpc-derive = "18.0.0"
 dirs = "4.0.0"
 thiserror = "1.0.38"
-anyhow = "1.0.68"
-zvariant = { version = "3.10.0", optional = true }
-zbus = { version = "3.7.0", optional = true }
-tokio = { version = "1.24.2", features = ["full"] }
+anyhow = "1.0.69"
+zvariant = { version = "3.11.0", optional = true }
+zbus = { version = "3.10.0", optional = true }
+tokio = { version = "1.26.0", features = ["full"] }
 ical = { version = "0.8.0", optional = true }
 
 [dependencies.codi_os_protocol]
