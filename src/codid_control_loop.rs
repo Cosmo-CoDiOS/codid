@@ -18,8 +18,8 @@ pub enum ControlLoopError {
     /// This also returns an error over JSON-RPC socket, but logs in the daemon as well.
     #[error("Execution of method errored.")]
     MethodExecutionError,
-    /// Returned when transforming the `Path` to a `&str` fails.
-    #[error("Error transforming `Path` to `&str`")]
+    /// Returned when transforming the `Path` to a `&str` yields `None`.
+    #[error("Transforming `Path` to `&str` yielded `None`.")]
     SocketPathTransformError,
     /// Generic error, derived from `std::io::Error` when the server fails to start.
     #[error("Server error")]
