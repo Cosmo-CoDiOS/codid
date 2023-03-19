@@ -40,7 +40,7 @@ compile_error!(
 #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
 compile_error!("Target CPU not supported, please respecify!");
 
-/// `StateStruct` is the shared state that the `State` type holds, using `Arc<Mutex<T>>`.
+/// `StateStruct` is the shared state that the `State` type holds, using `Mutex<T>`.
 #[derive(Debug, Clone)]
 pub struct StateStruct {
     /// This field holds the configuration struct for `codid`.
