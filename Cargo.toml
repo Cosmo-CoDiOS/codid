@@ -50,7 +50,7 @@ lazy_static = "1.4.0"
 jsonrpc-core = "18.0.0"
 jsonrpc-ipc-server = "18.0.0"
 jsonrpc-derive = "18.0.0"
-dirs = "4.0.0"
+dirs = "5.0.0"
 thiserror = "1.0.38"
 anyhow = "1.0.69"
 zvariant = { version = "3.11.0", optional = true }
