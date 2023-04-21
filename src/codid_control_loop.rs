@@ -1,13 +1,13 @@
 //! Control loop managed by Tokio for controlling the CoDi daemon.
 #![allow(dead_code)]
 
+use std::future::Future;
 use crate::State;
 use std::path::Path;
 
 use anyhow::Result;
-use jsonrpc_ipc_server::jsonrpc_core::IoHandler;
-use jsonrpc_ipc_server::ServerBuilder;
 use std::io;
+use futures::future;
 use thiserror::Error;
 
 /// `ControlLoopError` is an enum of different `Error` variants, backed by `anyhow` and `thiserror`.
@@ -21,30 +21,12 @@ pub enum ControlLoopError {
     /// Returned when transforming the `Path` to a `&str` yields `None`.
     #[error("Transforming `Path` to `&str` yielded `None`.")]
     SocketPathTransformError,
-    /// Generic error, derived from `std::io::Error` when the server fails to start.
-    #[error("Server error")]
-    ServerError(#[from] io::Error),
 }
 
-type ControlLoopResult = Result<(), ControlLoopError>;
+pub type ControlLoopResult = Result<(), ControlLoopError>;
 
-pub(crate) fn enter_control_loop(_s: &State, sock: &Path) -> ControlLoopResult {
+pub(crate) async fn enter_control_loop(_s: &State, sock: &Path) -> impl Future<Output = ControlLoopResult> {
     debug!("Entering command loop...");
 
-    let io = IoHandler::new();
-    let sock_path_str = match sock.to_str() {
-        Some(t) => t,
-        None => return Err(ControlLoopError::SocketPathTransformError),
-    };
-
-    let server = ServerBuilder::new(io)
-        .start(sock_path_str)
-        .map_err(ControlLoopError::ServerError)?;
-
-    server.wait();
-    Ok(())
-}
-
-fn return_populated_hdlr(io: &mut IoHandler) -> &mut IoHandler {
-    io
+    future::ok(()).await
 }
