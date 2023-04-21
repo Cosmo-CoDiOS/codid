@@ -29,8 +29,9 @@ compile_error!("ONE variant of CoDi required as a feature, please respecify!");
     feature = "android",
     feature = "ubports",
     feature = "gemian",
+    feature = "droidian",
     feature = "postmarketos",
-    feature = "sailfish",
+    feature = "sailfishos",
     feature = "nixos"
 )))]
 compile_error!(

@@ -124,18 +124,14 @@ pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
                 _ => continue 'vcardloop,
             };
 
-            for prop in line.clone().properties {
-                let params = match prop.clone().params {
-                    Some(res) => res,
-                    _ => continue 'vcardloop,
-                };
-                let value = match prop.clone().value {
+            for prop in &line.properties {
+                let params = match &prop.params {
                     Some(res) => res,
                     _ => continue 'vcardloop,
                 };
 
                 if prop.name == "FN" {
-                    contact_name = match prop.clone().value {
+                    contact_name = match &prop.value {
                         Some(res) => res.clone(),
                         _ => continue 'vcardloop,
                     };

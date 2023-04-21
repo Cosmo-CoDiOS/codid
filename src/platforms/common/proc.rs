@@ -1,38 +1,44 @@
 //! Modules for interfacing with the `/proc` FS special files provided by the Cosmo Linux kernel.
 
-use anyhow::Result;
 use std::fs;
 use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
-use thiserror::Error;
 
 /// `ProcUtilError` is an enum of different `Error` types and reasons.
 #[allow(clippy::enum_variant_names)]
-#[derive(Debug, Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum ProcUtilError {
-    /// `Stm32ResetErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 reset file.
+    /// `Stm32ResetErr` is an error returned when we're unable to write to the 'special file' for
+    /// rebooting the STM32.
     #[error("Unable to reset the STM32.")]
     Stm32ResetErr(#[source] io::Error),
-    /// `Stm32SetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
+    /// `Stm32SetDownloadErr` is an error returned when `codid` is unable to write to the 'special
+    /// file' for resetting the STM32 into 'bootloader mode'.
     #[error("Unable to set the STM32 into Download mode.")]
     Stm32SetDownloadErr(#[source] io::Error),
-    /// `Stm32ResetDownloadErr` is an error returned when we're unable to write, or if unavailable, to the special STM32 DL file.
+    /// `Stm32ResetDownloadErr` is an error returned when we're unable to write to the 'special
+    /// file' for resetting the STM32 into 'user mode'.
     #[error("Unable to reset the STM32 out of Download mode.")]
     Stm32ResetDownloadErr(#[source] io::Error),
-    /// `Stm32ProcIOError` is an error returned when setting up the file descriptor fails.
+    /// `Stm32ProcIoError` is an error returned when initialising the file descriptor.
     #[error("Unable to setup a file descriptor for special /proc file.")]
-    Stm32ProcIOError(#[source] io::Error),
+    Stm32ProcIoErr(#[source] io::Error),
 }
+
+/// `ProcUtilResult` acts as an abstraction over `anyhow` and `thiserror`, used for handling errors
+/// produced by the `crate::platforms::common::proc` module.
+pub type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
 
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 
 /// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting `CoDi`. This is done
-/// forcefully, and by doing it this way, `CoDi` has no way to power down itself. When `CoDiOS` is
-/// running, as discovered during startup of the CLI, it will accept a 'safe power down' command to
-/// avoid corruption to flash.
-pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
+/// forcefully, and by doing it this way, `CoDi` has no way to power down itself.
+///
+/// When `CoDiOS` is running, as discovered during startup of the CLI, it will accept a 'safe power
+/// down' command to avoid corruption to flash.
+pub fn stm32_reset() -> ProcUtilResult {
     info!("Resetting CoDi...");
 
     trace!("Open fd for STM32 reset proc");
@@ -42,7 +48,7 @@ pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_RESET_STM32_PROC)
-        .map_err(ProcUtilError::Stm32ResetErr)?;
+        .map_err(ProcUtilError::Stm32ProcIoErr)?;
 
     proc.write_all("1".as_bytes())
         .map_err(ProcUtilError::Stm32ResetErr)?;
@@ -60,20 +66,16 @@ pub fn hw_reset_stm32() -> Result<(), ProcUtilError> {
 
     info!("CoDi should now be started."); // for CoDiOS, should we wait for a 'READY' signal?
 
-    #[cfg(feature = "stock-codi")]
-    {
-        info!("Stock CoDi should now be showing the splash screen.");
-        info!("In the event that CoDi does not boot, please wait for a bit, and/or \
-            report the issue.");
-    }
-
     Ok(())
 }
 
-/// `stm32_bootloader_dl` accepts one parameter (`in_out`) of the `bool` type. If it's `true`, then
-/// it'll flip the GPIO pins that tell the STM32 to reboot to the bootloader. Likewise, if `in_out` is `false`,
-/// then it'll flip the GPIO pins the other way to reboot to 'normal mode' of the STM32 firmware.
-pub fn stm32_bootloader_dl(in_out: bool) -> Result<(), ProcUtilError> {
+/// `stm32_bootloader_dl` accepts one `bool` parameter (`in_out`).
+///
+/// If `true`, then it'll flip the GPIO pins that instruct the STM32 to reboot to the bootloader.
+///
+/// Likewise, if `in_out` is `false`, then it'll flip the GPIO pins the other way to reboot to
+/// 'user mode' of the STM32 firmware.
+pub fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
     trace!("Open fd for STM32 reset proc");
 
     let mut proc = fs::OpenOptions::new() // don't create, only write to special file
@@ -82,7 +84,7 @@ pub fn stm32_bootloader_dl(in_out: bool) -> Result<(), ProcUtilError> {
         .read(false)
         .create(false)
         .open(AEON_STM32_DL_FW_PROC)
-        .map_err(ProcUtilError::Stm32ProcIOError)?;
+        .map_err(ProcUtilError::Stm32ProcIoErr)?;
 
     if in_out {
         // true, we're uploading (downloading from CoDi's PoV) firmware
@@ -92,7 +94,7 @@ pub fn stm32_bootloader_dl(in_out: bool) -> Result<(), ProcUtilError> {
         // false, we're not uploading to CoDi
         // reset to cmd mode
         proc.write_all("0".as_bytes())
-            .map_err(ProcUtilError::Stm32SetDownloadErr)?;
+            .map_err(ProcUtilError::Stm32ResetDownloadErr)?;
     }
 
     Ok(())
