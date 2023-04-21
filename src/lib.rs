@@ -41,6 +41,9 @@ compile_error!(
 #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
 compile_error!("Target CPU not supported, please respecify!");
 
+#[cfg(not(any(target_os = "linux", target_os = "android")))]
+compile_error!("Build target not Linux OR Android, refusing to build!");
+
 /// `StateStruct` is the shared state that the `State` type holds, using `Mutex<T>`.
 #[derive(Debug, Clone)]
 pub struct StateStruct {
