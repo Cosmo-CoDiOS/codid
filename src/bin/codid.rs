@@ -19,7 +19,7 @@
 extern crate log;
 
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Mutex;
 
 use clap::{Arg, ArgMatches, Command};
@@ -28,22 +28,36 @@ use config::{Config, Environment, File};
 use codid::daemon::start;
 use codid::StateStruct;
 
-const VERSION: &str = env!("CARGO_PKG_VERSION");
+use anyhow::{Context, Result};
 
-fn load_config(cfg_file: &PathBuf) -> Option<Config> {
+#[derive(Debug, thiserror::Error)]
+enum ConfigError {
+    #[error("Config path does not exist.")]
+    ConfigPathNonExistent,
+    #[error("General configuration error.")]
+    GeneralConfigError(#[source] config::ConfigError),
+}
+
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+const ANDROID_CONF_PATH: &str =
+    "/data/data/com.github.cosmo_codios.manager/codid/config.toml";
+
+fn load_config(cfg_file: &PathBuf) -> Result<Config, ConfigError> {
+    debug!("Loading configuration, testing passed location for existence.");
     let path = if cfg_file.exists() {
-        Path::new(&cfg_file).to_path_buf()
+        cfg_file.to_path_buf()
     } else {
-        return None;
+        return Err(ConfigError::ConfigPathNonExistent);
     };
 
+    debug!("Configuration exists, load into memory.");
     let cfg = Config::builder()
         .add_source(File::from(path))
         .add_source(Environment::with_prefix("CODID"))
         .build()
-        .expect("Unable to construct Config struct");
+        .map_err(ConfigError::GeneralConfigError)?;
 
-    Some(cfg)
+    return Ok(cfg);
 }
 
 fn get_default_cfg_path() -> Option<PathBuf> {
@@ -51,9 +65,7 @@ fn get_default_cfg_path() -> Option<PathBuf> {
         .unwrap()
         .join(PathBuf::from("codid/config.toml"));
 
-    let android_dir = PathBuf::from(
-        "/data/data/com.github.cosmo_codios.codid.android/config.toml",
-    );
+    let android_dir = PathBuf::from(ANDROID_CONF_PATH);
 
     if xdg_dir.exists() {
         return Some(xdg_dir);
@@ -69,7 +81,7 @@ fn get_args() -> ArgMatches {
         .version(VERSION)
         .author("The Cosmo-CoDiOS Group")
         .subcommand_required(true)
-        .about("Cross-platform daemon-based interface to the Cosmo Communicator's cover display")
+        .about("Cross-platform interface to the Cosmo Communicator's cover display")
         .arg(Arg::new("config")
             .long("config")
             .short('c')
@@ -79,26 +91,28 @@ fn get_args() -> ArgMatches {
         .get_matches()
 }
 
-fn main() {
+fn main() -> Result<(), std::error::Error> {
+    /* get initial `ArgMatches` */
     let args = get_args();
+
     env_logger::init();
 
     /* load config file */
 
     let cfg_path = match args.get_one::<PathBuf>("config") {
         Some(cfg_path) => PathBuf::from(cfg_path),
-        None => get_default_cfg_path().expect("Unable to get configuration path from default logic. Likelihood is that config doesn't exist."),
+        None => get_default_cfg_path().unwrap_or_default(),
     };
 
     let cfg = load_config(&cfg_path)
-        .expect("Error parsing configuration file. Check the validity.");
+        .context("Error parsing configuration file. Check the validity of the config format.")?;
 
     /* Initialise state */
     let state = Mutex::new(StateStruct { cfg });
 
     trace!("Loaded configuration into shared State.");
 
-    // handle subcommands
+    /* interpret args */
 
     match args.subcommand() {
         Some(("spawn", _)) => {
@@ -109,4 +123,6 @@ fn main() {
             unreachable!(); // this shouldn't be reached
         }
     }
+
+    Ok(())
 }
