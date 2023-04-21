@@ -47,9 +47,6 @@ log = { version = "0.4.17", features = ["kv_unstable"] }
 env_logger = "*"
 structure = "0.1.2"
 lazy_static = "1.4.0"
-jsonrpc-core = "18.0.0"
-jsonrpc-ipc-server = "18.0.0"
-jsonrpc-derive = "18.0.0"
 dirs = "5.0.0"
 thiserror = "1.0.38"
 anyhow = "1.0.69"
@@ -57,6 +54,7 @@ zvariant = { version = "3.11.0", optional = true }
 zbus = { version = "3.10.0", optional = true }
 tokio = { version = "1.26.0", features = ["full"] }
 ical = { version = "0.8.0", optional = true }
+tonic = "0.9.2"
 
 [dependencies.codi_os_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
@@ -73,10 +71,6 @@ features = ["std"]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
 optional = true
-
-[dependencies.codi_daemon_protocol]
-git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
-branch = "main"
 
 [dependencies.codi_boot_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
