@@ -55,7 +55,6 @@ pub(crate) mod codi_event_loop;
 pub(crate) mod codid_control_loop;
 pub(crate) mod codid_event_loop;
 pub mod platforms;
-pub mod rpc;
 
 pub mod daemon {
     //! This is the module for the `codid` daemon.
