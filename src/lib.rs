@@ -67,7 +67,7 @@ pub mod daemon {
     use futures::future;
 
     /// Daemon entrypoint
-    pub async fn start(s: &State) -> Result<(), Error> {
+    pub async fn start(_s: &State) -> Result<(), Error> {
         info!("Hello, Cosmo!");
 
         info!("The Cosmo-CoDiOS daemon has now started.");
