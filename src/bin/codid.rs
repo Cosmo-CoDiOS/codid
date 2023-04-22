@@ -22,7 +22,7 @@ use std::env;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use clap::{Arg, ArgMatches, Command};
+use clap::{Arg, ArgMatches, Command, value_parser};
 use config::{Config, Environment, File};
 
 use codid::daemon::start;
@@ -30,82 +30,99 @@ use codid::StateStruct;
 
 use anyhow::{Context, Result};
 
-#[derive(Debug, thiserror::Error)]
-enum ConfigError {
-    #[error("Config path does not exist.")]
-    ConfigPathNonExistent,
-    #[error("General configuration error.")]
-    GeneralConfigError(#[source] config::ConfigError),
-}
-
-const VERSION: &str = env!("CARGO_PKG_VERSION");
 const ANDROID_CONF_PATH: &str =
     "/data/data/com.github.cosmo_codios.manager/codid/config.toml";
 
-fn load_config(cfg_file: &PathBuf) -> Result<Config, ConfigError> {
+const SYSTEM_CONF_DEF_PATH: &str =
+    "/usr/share/cosmo-codios/codid/config.toml";
+
+mod errors {
+    #[derive(Debug, thiserror::Error)]
+    pub(crate) enum ConfigError {
+        #[error("Config path does not exist.")]
+        ConfigPathNonExistent,
+        #[error("General configuration error.")]
+        GeneralConfigError(#[source] config::ConfigError),
+    }
+
+    #[derive(Debug, thiserror::Error)]
+    pub(crate) enum ArgsError {
+        #[error("Could not get config path from Clap, including default")]
+        ArgConfigPathGetError(#[source] clap::parser::MatchesError),
+    }
+}
+
+
+fn load_config(cfg_file: &PathBuf) -> Result<Config, errors::ConfigError> {
     debug!("Loading configuration, testing passed location for existence.");
     let path = if cfg_file.exists() {
         cfg_file.to_path_buf()
     } else {
-        return Err(ConfigError::ConfigPathNonExistent);
+        return Err(errors::ConfigError::ConfigPathNonExistent);
     };
 
     debug!("Configuration exists, load into memory.");
+
     let cfg = Config::builder()
         .add_source(File::from(path))
         .add_source(Environment::with_prefix("CODID"))
         .build()
-        .map_err(ConfigError::GeneralConfigError)?;
+        .map_err(errors::ConfigError::GeneralConfigError)?;
 
     return Ok(cfg);
 }
 
 fn get_default_cfg_path() -> Option<PathBuf> {
     let xdg_dir = dirs::config_dir()
-        .unwrap()
+        .unwrap_or_default()
         .join(PathBuf::from("codid/config.toml"));
 
     let android_dir = PathBuf::from(ANDROID_CONF_PATH);
+    let system_dir = PathBuf::from(SYSTEM_CONF_DEF_PATH);
 
-    if xdg_dir.exists() {
+    /* we don't handle readability here */
+    if android_dir.exists() {
+        return Some(android_dir)
+    } else if xdg_dir.exists() {
         return Some(xdg_dir);
-    } else if android_dir.exists() {
-        return Some(android_dir);
     }
 
-    None
+    return Some(system_dir);
 }
 
 fn get_args() -> ArgMatches {
-    Command::new("codid")
-        .version(VERSION)
-        .author("The Cosmo-CoDiOS Group")
+    Command::new(env!("CARGO_BIN_NAME"))
+        .about(env!("CARGO_PKG_DESCRIPTION"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
         .about("Cross-platform interface to the Cosmo Communicator's cover display")
         .arg(Arg::new("config")
             .long("config")
             .short('c')
+            .value_name("FILE")
+            .value_parser(value_parser!(PathBuf))
+            .default_value(get_default_cfg_path()
+                .unwrap_or_default()
+                .into_os_string())
             .help("Path to TOML configuration"))
         .subcommand(Command::new("spawn")
             .about("Starts the daemon."))
         .get_matches()
 }
 
-fn main() -> Result<(), std::error::Error> {
+#[tokio::main]
+async fn main() -> Result<(), anyhow::Error> {
     /* get initial `ArgMatches` */
     let args = get_args();
 
     env_logger::init();
 
-    /* load config file */
-
-    let cfg_path = match args.get_one::<PathBuf>("config") {
-        Some(cfg_path) => PathBuf::from(cfg_path),
-        None => get_default_cfg_path().unwrap_or_default(),
-    };
-
-    let cfg = load_config(&cfg_path)
-        .context("Error parsing configuration file. Check the validity of the config format.")?;
+    let cfg = load_config(args.try_get_one::<PathBuf>("config")
+                        .map_err(errors::ArgsError::ArgConfigPathGetError)
+                        .context("Error getting configuration path from Clap, including default")?
+                        .unwrap())
+        .context("Error parsing configuration file. Is it up to date, valid, and readable?")?;
 
     /* Initialise state */
     let state = Mutex::new(StateStruct { cfg });
@@ -117,7 +134,7 @@ fn main() -> Result<(), std::error::Error> {
     match args.subcommand() {
         Some(("spawn", _)) => {
             debug!("Handing over to daemon module...");
-            start(&state);
+            start(&state).await.context("Failed to start daemon.")?;
         }
         _ => {
             unreachable!(); // this shouldn't be reached

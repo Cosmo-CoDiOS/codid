@@ -62,13 +62,17 @@ pub mod platforms;
 pub mod daemon {
     //! This is the module for the `codid` daemon.
 
-    use super::State;
+    use anyhow::{Error, Result};
+    use futures::future;
+    use crate::State;
 
     /// Daemon entrypoint
-    pub fn start(_s: &State) {
+    pub async fn start(s: &State) -> Result<(), Error> {
         info!("Hello, Cosmo!");
 
         info!("The Cosmo-CoDiOS daemon has now started.");
         info!("Running until asked to stop...");
+
+        future::ok(()).await
     }
 }
