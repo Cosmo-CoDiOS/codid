@@ -22,7 +22,7 @@ use std::env;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use clap::{Arg, ArgMatches, Command, value_parser};
+use clap::{value_parser, Arg, ArgMatches, Command};
 use config::{Config, Environment, File};
 
 use codid::daemon::start;
@@ -33,8 +33,7 @@ use anyhow::{Context, Result};
 const ANDROID_CONF_PATH: &str =
     "/data/data/com.github.cosmo_codios.manager/codid/config.toml";
 
-const SYSTEM_CONF_DEF_PATH: &str =
-    "/usr/share/cosmo-codios/codid/config.toml";
+const SYSTEM_CONF_DEF_PATH: &str = "/usr/share/cosmo-codios/codid/config.toml";
 
 mod errors {
     #[derive(Debug, thiserror::Error)]
@@ -51,7 +50,6 @@ mod errors {
         ArgConfigPathGetError(#[source] clap::parser::MatchesError),
     }
 }
-
 
 fn load_config(cfg_file: &PathBuf) -> Result<Config, errors::ConfigError> {
     debug!("Loading configuration, testing passed location for existence.");
@@ -82,7 +80,7 @@ fn get_default_cfg_path() -> Option<PathBuf> {
 
     /* we don't handle readability here */
     if android_dir.exists() {
-        return Some(android_dir)
+        return Some(android_dir);
     } else if xdg_dir.exists() {
         return Some(xdg_dir);
     }

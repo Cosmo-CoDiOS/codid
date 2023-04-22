@@ -62,9 +62,9 @@ pub mod platforms;
 pub mod daemon {
     //! This is the module for the `codid` daemon.
 
+    use crate::State;
     use anyhow::{Error, Result};
     use futures::future;
-    use crate::State;
 
     /// Daemon entrypoint
     pub async fn start(s: &State) -> Result<(), Error> {
