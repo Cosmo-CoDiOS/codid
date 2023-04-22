@@ -13,7 +13,7 @@ pub(crate) mod droidian;
 pub(crate) mod ubports;
 
 #[cfg(all(feature = "postmarketos", target_os = "linux"))]
-pub(crate) mod postmarket;
+pub(crate) mod postmarketos;
 
 #[cfg(all(feature = "sailfishos", target_os = "linux"))]
 pub(crate) mod sailfishos;
