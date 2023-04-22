@@ -38,8 +38,9 @@ fn get_args() -> ArgMatches {
             Command::new("exit-stm32-bootloader")
                 .about("Tell the STM32 to exit bootloader mode, and reset"),
         )
-        .subcommand(Command::new("shutdown-codid")
-                .about("Shutdown the CoDi daemon."))
+        .subcommand(
+            Command::new("shutdown-codid").about("Shutdown the CoDi daemon."),
+        )
         .get_matches()
 }
 
