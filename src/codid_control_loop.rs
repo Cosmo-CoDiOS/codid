@@ -1,12 +1,9 @@
 //! Control loop managed by Tokio for controlling the CoDi daemon.
 #![allow(dead_code)]
 
-use std::future::Future;
 use crate::State;
-use std::path::Path;
 
 use anyhow::Result;
-use std::io;
 use futures::future;
 use thiserror::Error;
 
@@ -25,7 +22,7 @@ pub enum ControlLoopError {
 
 pub type ControlLoopResult = Result<(), ControlLoopError>;
 
-pub(crate) async fn enter_control_loop(_s: &State, sock: &Path) -> impl Future<Output = ControlLoopResult> {
+pub(crate) async fn enter_control_loop(_s: &State) -> ControlLoopResult {
     debug!("Entering command loop...");
 
     future::ok(()).await
