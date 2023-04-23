@@ -44,7 +44,7 @@ jobs:
               with:
                   crate: cross
                   version: latest
-                  use-tool-cache: false
+                  use-tool-cache: true
             - name: Install cargo-binutils
               uses: actions-rs/install@v0.1
               with:
@@ -103,7 +103,7 @@ jobs:
               with:
                   crate: cross
                   version: latest
-                  use-tool-cache: false
+                  use-tool-cache: true
             - name: Install cargo-binutils
               uses: actions-rs/install@v0.1
               with:
