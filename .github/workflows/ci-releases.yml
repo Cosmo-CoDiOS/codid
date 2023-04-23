@@ -20,6 +20,9 @@ jobs:
                 rom:
                     - gemian
                     - postmarketos
+                    - sailfishos
+                    - nixos
+                    - droidian
                     - ubports
                 codi:
                     - stock-codi
@@ -83,20 +86,13 @@ jobs:
         name: >-
             Release builder for the Android-based ROM, targeted for both CoDi firmware variants.
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                rom:
-                    - android
-                codi:
-                    - stock-codi
-                    - codios-codi
         steps:
             - name: Checkout sources
               uses: actions/checkout@v3
             - name: Configure Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
-                  toolchain: stable
+                  toolchain: 1.67.0
                   default: true
                   components: llvm-tools-preview
                   override: true
@@ -108,8 +104,6 @@ jobs:
                   crate: cross
                   version: latest
                   use-tool-cache: false
-            - name: Install native deps
-              run: sudo apt-get install -y libdbus-1-dev:arm64 pkg-config:arm64 libudev-dev:arm64 libglib2.0-dev:arm64 libudev-dev:amd64 musl-dev:arm64 libdbus-1-dev:amd64 libsqlite3-dev:arm64 libsqlite3-dev:amd64 cmake:amd64
             - name: Install cargo-binutils
               uses: actions-rs/install@v0.1
               with:
@@ -121,7 +115,7 @@ jobs:
               with:
                   command: build
                   args: >-
-                      --all --release --locked --verbose  --features=stock-codi,codios-codi,${{matrix.rom}} --target=aarch64-linux-android
+                      --all --release --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
                   use-cross: true
             - name: Strip the `codid` binary
               uses: actions-rs/cargo@v1
@@ -138,10 +132,10 @@ jobs:
             - name: Package Release
               shell: bash
               run: |
-                  tar -czvf /home/runner/work/codid/codid--${{ matrix.rom }}.tgz /home/runner/work/codid/codid/target/aarch64-linux-android/release/codid /home/runner/work/codid/codid/target/aarch64-linux-android/release/codictl
+                  tar -czvf /home/runner/work/codid/codid-release--android.tgz /home/runner/work/codid/codid/target/aarch64-linux-android/release/codid /home/runner/work/codid/codid/target/aarch64-linux-android/release/codictl
             - name: Publish release artifacts
               uses: softprops/action-gh-release@v1
               with:
-                  files: /home/runner/work/codid/codid-release-${{ matrix.rom }}.tgz
+                  files: /home/runner/work/codid/codid-release-android.tgz
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

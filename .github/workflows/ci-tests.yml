@@ -11,12 +11,11 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                target:
-                    - aarch64-unknown-linux-musl
-                channel:
-                    - stable
                 rom:
                     - gemian
+                    - sailfishos
+                    - nixos
+                    - ubports
                     - postmarketos
                     - ubports
         steps:
@@ -29,11 +28,11 @@ jobs:
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1
               with:
-                  toolchain: ${{ matrix.channel }}
+                  toolchain: stable
                   profile: minimal
                   components: clippy
                   override: true
-                  target: ${{ matrix.target }}
+                  target: aarch64-unknown-linux-musl
                   default: true
             - name: Install Cross
               if: steps.rust-cache.outputs.cache-hit != 'true'
@@ -46,33 +45,24 @@ jobs:
               uses: actions-rs/cargo@v1
               with:
                   command: build
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
             - name: Run tests on project (Linux)
               uses: actions-rs/cargo@v1
               with:
                   command: test
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
             - name: Run Clippy checks on project (Linux)
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
 
     tests-arm64-android:
         name: Run tests on Android
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                target:
-                    - aarch64-linux-android
-                channel:
-                    - stable
-                    - nightly
-                rom:
-                    - android
         steps:
             - name: Checkout sources
               uses: actions/checkout@v3
@@ -83,11 +73,11 @@ jobs:
               if: steps.rust-cache.outputs.cache-hit != 'true'
               uses: actions-rs/toolchain@v1
               with:
-                  toolchain: ${{ matrix.channel }}
+                  toolchain: 1.67.0
                   profile: minimal
                   components: clippy
                   override: true
-                  target: ${{ matrix.target }}
+                  target: aarch64-linux-android
                   default: true
             - name: Install Cross
               if: steps.rust-cache.outputs.cache-hit != 'true'
@@ -100,17 +90,17 @@ jobs:
               uses: actions-rs/cargo@v1
               with:
                   command: build
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=android,stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
-            - name: Run tests on project (Android)
+            - name: Run tests on project (Android)c
               uses: actions-rs/cargo@v1
               with:
                   command: test
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=android,stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
             - name: Run Clippy checks on project (Android)
               uses: actions-rs/cargo@v1
               with:
                   command: clippy
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
+                  args: --features=android,stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
