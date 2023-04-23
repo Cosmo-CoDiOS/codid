@@ -5,137 +5,90 @@ on:
         workflows: ["CI test workflow"]
         types: [completed]
         branches: [main]
-    workflow_dispatch:
+
+permissions:
+    contents: write
 
 env:
     CARGO_TERM_COLOR: always
 jobs:
-    create-release-linux:
-        if: startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success'
-        name: >-
-            Release builder for the ${{ matrix.rom }} Linux-based ROM, targeted for the ${{ matrix.codi }} CoDi firmware variant.
+    create-gh-release:
+        name: Create release on GitHub.
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v3
+
+            - name: Create release
+              uses: taiki-e/create-gh-release-action@v1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+    upload-release-linux:
+        needs: [create-gh-release]
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success' }}
+        name: Release uploader for the ${{ matrix.rom }} ROM.
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 rom:
-                    - gemian
-                    - postmarketos
-                    - sailfishos
-                    - nixos
-                    - droidian
-                    - ubports
-                codi:
-                    - stock-codi
-                    - codios-codi
+                    [
+                        "gemian",
+                        "sailfishos",
+                        "nixos",
+                        "postmarketos",
+                        "droidian",
+                        "android",
+                    ]
+                target:
+                    [
+                        "aarch64-unknown-linux-musl",
+                        "x86_64-unknown-linux-musl",
+                        "aarch64-linux-android",
+                    ]
         steps:
             - name: Checkout sources
               uses: actions/checkout@v3
-            - name: Configure Rust toolchain
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  default: true
-                  components: llvm-tools-preview
-                  override: true
-                  target: aarch64-unknown-linux-musl
-                  profile: minimal
-            - name: Install cargo-cross
-              uses: actions-rs/install@v0.1
-              with:
-                  crate: cross
-                  version: latest
-                  use-tool-cache: true
-            - name: Install cargo-binutils
-              uses: actions-rs/install@v0.1
-              with:
-                  crate: cargo-binutils
-                  version: latest
-                  use-tool-cache: true
-            - name: Build project for Linux ROMs
-              uses: actions-rs/cargo@v1
-              with:
-                  command: build
-                  args: >-
-                      --all --release --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
-                  use-cross: true
-            - name: Strip the `codid` binary
-              uses: actions-rs/cargo@v1
-              with:
-                  command: strip
-                  args: strip --release --bin codid
-                  use-cross: true
-            - name: Strip the `codictl` binary
-              uses: actions-rs/cargo@v1
-              with:
-                  command: strip
-                  args: --release --bin codictl
-                  use-cross: true
-            - name: Package Release
-              shell: bash
-              run: |
-                  tar -czvf /home/runner/work/codid/codid--${{ matrix.rom }}-${{ matrix.codi }}.tgz /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codid /home/runner/work/codid/codid/target/aarch64-unknown-linux-musl/release/codictl
-            - name: Publish release artifacts
-              uses: softprops/action-gh-release@v1
-              with:
-                  files: /home/runner/work/codid/codid-release-${{ matrix.rom }}-${{ matrix.codi }}.tgz
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    create-release-android:
-        if: startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success'
-        name: >-
-            Release builder for the Android-based ROM, targeted for both CoDi firmware variants.
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v3
-            - name: Configure Rust toolchain
+            - name: Cache Rust assets
+              id: rust-cache
+              uses: Swatinem/rust-cache@v2
+            - name: Configure Rust
+              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
               uses: actions-rs/toolchain@v1
               with:
                   toolchain: 1.67.0
                   default: true
                   components: llvm-tools-preview
                   override: true
-                  target: aarch64-linux-android
+                  target: ${{ matrix.target }}
                   profile: minimal
-            - name: Install cargo-cross
+            - name: Install Cross
+              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
               uses: actions-rs/install@v0.1
               with:
                   crate: cross
                   version: latest
                   use-tool-cache: true
-            - name: Install cargo-binutils
-              uses: actions-rs/install@v0.1
+            - name: Build & upload codid release for Linux-based ROMs.
+              if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
+              uses: taiki-e/upload-rust-binary-action@v1
               with:
-                  crate: cargo-binutils
-                  version: latest
-                  use-tool-cache: true
-            - name: Build project for Linux ROMs
-              uses: actions-rs/cargo@v1
+                  bin: codictl,codid
+                  target: ${{ matrix.target }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  archive: codid-${{ github.ref }}-release-linux-${{ matrix.rom }}
+                  features: ${{ matrix.rom }},stock-codi,codios-codi
+                  zip: all
+                  checksum: sha256
+            - name: Build & upload codid release for Android ROMs.
+              if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
+              uses: taiki-e/upload-rust-binary-action@v1
               with:
-                  command: build
-                  args: >-
-                      --all --release --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
-                  use-cross: true
-            - name: Strip the `codid` binary
-              uses: actions-rs/cargo@v1
-              with:
-                  command: strip
-                  args: strip --release --bin codid
-                  use-cross: true
-            - name: Strip the `codictl` binary
-              uses: actions-rs/cargo@v1
-              with:
-                  command: strip
-                  args: --release --bin codictl
-                  use-cross: true
-            - name: Package Release
-              shell: bash
-              run: |
-                  tar -czvf /home/runner/work/codid/codid-release--android.tgz /home/runner/work/codid/codid/target/aarch64-linux-android/release/codid /home/runner/work/codid/codid/target/aarch64-linux-android/release/codictl
-            - name: Publish release artifacts
-              uses: softprops/action-gh-release@v1
-              with:
-                  files: /home/runner/work/codid/codid-release-android.tgz
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  bin: codictl,codid
+                  target: ${{ matrix.target }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  archive: codid-${{ github.ref }}-release-android
+                  features: ${{ matrix.rom }},stock-codi,codios-codi
+                  zip: all
+                  checksum: sha256
