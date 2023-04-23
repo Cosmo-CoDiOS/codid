@@ -92,7 +92,7 @@ jobs:
                   command: build
                   args: --features=android,stock-codi,codios-codi --target=aarch64-unknown-linux-musl
                   use-cross: true
-            - name: Run tests on project (Android)c
+            - name: Run tests on project (Android)
               uses: actions-rs/cargo@v1
               with:
                   command: test
