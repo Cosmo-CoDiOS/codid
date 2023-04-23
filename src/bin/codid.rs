@@ -19,7 +19,7 @@
 extern crate log;
 
 use std::env;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 use clap::{value_parser, Arg, ArgMatches, Command};
@@ -51,7 +51,7 @@ mod errors {
     }
 }
 
-fn load_config(cfg_file: &PathBuf) -> Result<Config, errors::ConfigError> {
+fn load_config(cfg_file: &Path) -> Result<Config, errors::ConfigError> {
     debug!("Loading configuration, testing passed location for existence.");
     let path = if cfg_file.exists() {
         cfg_file.to_path_buf()
@@ -67,10 +67,10 @@ fn load_config(cfg_file: &PathBuf) -> Result<Config, errors::ConfigError> {
         .build()
         .map_err(errors::ConfigError::GeneralConfigError)?;
 
-    return Ok(cfg);
+    Ok(cfg)
 }
 
-fn get_default_cfg_path() -> Option<PathBuf> {
+fn get_default_cfg_path() -> PathBuf {
     let xdg_dir = dirs::config_dir()
         .unwrap_or_default()
         .join(PathBuf::from("codid/config.toml"));
@@ -80,12 +80,12 @@ fn get_default_cfg_path() -> Option<PathBuf> {
 
     /* we don't handle readability here */
     if android_dir.exists() {
-        return Some(android_dir);
+        return android_dir;
     } else if xdg_dir.exists() {
-        return Some(xdg_dir);
+        return xdg_dir;
     }
 
-    return Some(system_dir);
+    system_dir
 }
 
 fn get_args() -> ArgMatches {
@@ -101,7 +101,6 @@ fn get_args() -> ArgMatches {
             .value_name("FILE")
             .value_parser(value_parser!(PathBuf))
             .default_value(get_default_cfg_path()
-                .unwrap_or_default()
                 .into_os_string())
             .help("Path to TOML configuration"))
         .subcommand(Command::new("spawn")
