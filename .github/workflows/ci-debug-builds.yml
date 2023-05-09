@@ -8,7 +8,7 @@ env:
 jobs:
   build-debug-nightly:
     name: >-
-      Nightly debug builder for `codid` on the Cosmo Communicator. Target ROM: ${{ matrix.rom }}.
+        Nightly builder for `codid`. Target ROM: ${{ matrix.rom }}, Target Arch: ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -70,15 +70,20 @@ jobs:
         if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
         uses: pyTooling/Actions/releaser@main
         with:
-          tag: nightly-linux
+          tag: nightly-linux-${{ matrix.rom }}-${{ github.ref }}
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: target/${{ matrix.target }}/debug/codi*
+          files: |
+              target/${{ matrix.target }}/debug/codid
+              target/${{ matrix.target }}/debug/codictl
+
       - name: Upload debug nightly build (Android-based ROMs)
         if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
         uses: pyTooling/Actions/releaser@main
         with:
-          tag: nightly-android
+          tag: nightly-android-${{ github.ref }}
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: target/${{ matrix.target }}/debug/codi*
+          files: |
+              target/${{ matrix.target }}/debug/codid
+              target/${{ matrix.target }}/debug/codictl
