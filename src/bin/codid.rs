@@ -33,7 +33,7 @@ use anyhow::{Context, Result};
 const ANDROID_CONF_PATH: &str =
     "/data/data/com.github.cosmo_codios.manager/codid/config.toml";
 
-const SYSTEM_CONF_DEF_PATH: &str = "/usr/share/cosmo-codios/codid/config.toml";
+const SYSTEM_CONF_DEF_PATH: &str = "/etc/cosmo-codios/codid/config.toml";
 
 mod errors {
     #[derive(Debug, thiserror::Error)]
