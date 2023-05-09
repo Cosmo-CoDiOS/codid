@@ -1,87 +1,84 @@
 name: codid CI debug builder
 on:
-    workflow_dispatch:
-    schedule:
-        - cron: "0 0 */2 * *"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
 env:
-    CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always
 jobs:
-    build-debug-linux-arm64:
-        name: >-
-            Debug builder for `codid` on the Cosmo Communicator. Target ROM: ${{ matrix.rom }}, and target CoDi variant: ${{ matrix.codi }}
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                rom:
-                    - gemian
-                    - postmarketos
-                    - sailfishos
-                    - nixos
-                    - droidian
-                    - ubports
-                codi:
-                    - stock-codi
-                    - codios-codi
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v3
-            - name: Cache Rust assets
-              id: rust-cache
-              uses: Swatinem/rust-cache@v2
-            - name: Configure Rust toolchain
-              if: steps.rust-cache.outputs.cache-hit != 'true'
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  default: true
-                  override: true
-                  target: aarch64-unknown-linux-musl
-                  profile: minimal
-            - name: Install Cross
-              if: steps.rust-cache.outputs.cache-hit != 'true'
-              uses: actions-rs/install@v0.1
-              with:
-                  crate: cross
-                  version: latest
-                  use-tool-cache: true
-            - name: Build project in debug mode
-              uses: actions-rs/cargo@v1
-              with:
-                  command: build
-                  args: >-
-                      --all --locked --verbose  --features=${{ matrix.codi }},${{matrix.rom}} --target=aarch64-unknown-linux-musl
-                  use-cross: true
-
-    build-debug-android-arm64:
-        name: >-
-            Debug builder for the Android ROMs on Cosmo Communicator, compiled for both CoDi variants.
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v3
-            - name: Cache Rust assets
-              id: rust-cache
-              uses: Swatinem/rust-cache@v2
-            - name: Configure Rust toolchain
-              if: steps.rust-cache.outputs.cache-hit != 'true'
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: 1.67.0
-                  default: true
-                  override: true
-                  target: aarch64-linux-android
-                  profile: minimal
-            - name: Install Cross
-              if: steps.rust-cache.outputs.cache-hit != 'true'
-              uses: actions-rs/install@v0.1
-              with:
-                  crate: cross
-                  version: latest
-                  use-tool-cache: true
-            - name: Build project in debug mode
-              uses: actions-rs/cargo@v1
-              with:
-                  command: build
-                  args: >-
-                      --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
-                  use-cross: true
+  build-debug-nightly:
+    name: >-
+      Nightly debug builder for `codid` on the Cosmo Communicator. Target ROM: ${{ matrix.rom }}.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rom:
+          [
+            "gemian",
+            "sailfishos",
+            "nixos",
+            "postmarketos",
+            "droidian",
+            "android",
+          ]
+        target:
+          [
+            "aarch64-unknown-linux-musl",
+            "x86_64-unknown-linux-musl",
+            "aarch64-linux-android",
+          ]
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+      - name: Cache Rust assets
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Rust
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.67.0
+          default: true
+          components: llvm-tools-preview
+          override: true
+          target: ${{ matrix.target }}
+          profile: minimal
+      - name: Install Cross
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+          use-tool-cache: true
+      - name: Build codid release for Linux-based ROMs.
+        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: >-
+            --all --release --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
+          use-cross: true
+      - name: Build codid release for Android-based ROMs.
+        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: >-
+            --all --release --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
+          use-cross: true
+      - name: Upload debug nightly build (Linux-based ROMs)
+        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
+        uses: pyTooling/Actions/releaser@main
+        with:
+          tag: nightly-linux
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: target/${{ matrix.target }}/debug/codi*
+      - name: Upload debug nightly build (Android-based ROMs)
+        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
+        uses: pyTooling/Actions/releaser@main
+        with:
+          tag: nightly-android
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: target/${{ matrix.target }}/debug/codi*
