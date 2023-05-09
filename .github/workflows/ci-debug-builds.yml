@@ -74,8 +74,8 @@ jobs:
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-              target/${{ matrix.target }}/debug/codid
-              target/${{ matrix.target }}/debug/codictl
+              /github/workspace/target/${{ matrix.target }}/debug/codid
+              /github/workspace/target/${{ matrix.target }}/debug/codictl
 
       - name: Upload debug nightly build (Android-based ROMs)
         if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
@@ -85,5 +85,5 @@ jobs:
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-              target/${{ matrix.target }}/debug/codid
-              target/${{ matrix.target }}/debug/codictl
+              /github/workspace/target/${{ matrix.target }}/debug/codid
+              /github/workspace/target/${{ matrix.target }}/debug/codictl
