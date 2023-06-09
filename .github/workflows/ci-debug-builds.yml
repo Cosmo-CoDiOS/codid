@@ -18,7 +18,7 @@ jobs:
         Nightly builder for `codid`. Target ROM: ${{ matrix.rom }}, Target Arch: ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         rom:
           [
