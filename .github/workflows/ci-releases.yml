@@ -31,6 +31,8 @@ jobs:
         name: Release uploader for the ${{ matrix.rom }} ROM.
         runs-on: ubuntu-latest
         strategy:
+            fail-fast: true
+            max-parallel: 1
             matrix:
                 rom:
                     [

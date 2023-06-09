@@ -1,16 +1,25 @@
 name: codid CI debug builder
+
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
+
 env:
   CARGO_TERM_COLOR: always
+
+concurrency:
+  group: gh-ref-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-debug-nightly:
     name: >-
         Nightly builder for `codid`. Target ROM: ${{ matrix.rom }}, Target Arch: ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
+      max-parallel: 1
       matrix:
         rom:
           [
