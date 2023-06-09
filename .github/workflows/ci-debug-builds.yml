@@ -19,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      max-parallel: 1
       matrix:
         rom:
           [
@@ -77,7 +76,6 @@ jobs:
           use-cross: true
       - name: Zip up the artifacts
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{github.workspace }}/target/${{ matrix.target }}/debug/codictl
-
       - name: Upload debug nightly build
         uses: pyTooling/Actions/releaser@main
         with:
