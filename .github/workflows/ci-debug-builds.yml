@@ -56,7 +56,7 @@ jobs:
         with:
           command: build
           args: >-
-            --all --release --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
+            --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
       - name: Build codid release for Android-based ROMs.
         if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
@@ -64,7 +64,7 @@ jobs:
         with:
           command: build
           args: >-
-            --all --release --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
+            --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
       - name: Upload debug nightly build (Linux-based ROMs)
         if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
