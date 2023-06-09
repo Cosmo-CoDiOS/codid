@@ -79,7 +79,7 @@ jobs:
                   bin: codictl,codid
                   target: ${{ matrix.target }}
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  archive: codid-${{ github.ref }}-release-linux-${{ matrix.rom }}
+                  archive: codid-${{ github.ref_name }}-release-linux-${{ matrix.rom }}
                   features: ${{ matrix.rom }},stock-codi,codios-codi
                   zip: all
                   checksum: sha256
@@ -90,7 +90,7 @@ jobs:
                   bin: codictl,codid
                   target: ${{ matrix.target }}
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  archive: codid-${{ github.ref }}-release-android
+                  archive: codid-${{ github.ref_name }}-release-android
                   features: ${{ matrix.rom }},stock-codi,codios-codi
                   zip: all
                   checksum: sha256
