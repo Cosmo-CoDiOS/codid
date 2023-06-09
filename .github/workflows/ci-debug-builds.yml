@@ -75,8 +75,10 @@ jobs:
             --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
       - name: Zip up the artifacts
+        if: success() || failure()
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{github.workspace }}/target/${{ matrix.target }}/debug/codictl
       - name: Upload debug nightly build
+        if: success() || failure()
         uses: pyTooling/Actions/releaser@main
         with:
           tag: codid-nightly-${{ matrix.rom }}
