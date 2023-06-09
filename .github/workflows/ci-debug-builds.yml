@@ -70,7 +70,7 @@ jobs:
         if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
         uses: pyTooling/Actions/releaser@main
         with:
-          tag: nightly-linux-${{ matrix.rom }}-${{ github.ref }}
+          tag: codid-nightly-linux-${{ matrix.rom }}
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
@@ -81,7 +81,7 @@ jobs:
         if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
         uses: pyTooling/Actions/releaser@main
         with:
-          tag: nightly-android-${{ github.ref }}
+          tag: codid-nightly-android
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
