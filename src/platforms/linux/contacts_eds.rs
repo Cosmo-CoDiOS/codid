@@ -27,7 +27,7 @@ impl CoDiContactNumber {
 #[derive(Clone, Debug)]
 pub(crate) struct CoDiContact {
     name: String,
-    phone: Vec<CoDiContactNumber>,
+    phone: CoDiContactNumbers,
 }
 
 impl CoDiContact {
@@ -35,7 +35,7 @@ impl CoDiContact {
         self.name.to_owned()
     }
 
-    pub(crate) fn get_numbers(&self) -> Vec<CoDiContactNumber> {
+    pub(crate) fn get_numbers(&self) -> CoDiContactNumbers {
         self.phone.to_owned()
     }
 }
@@ -59,6 +59,7 @@ pub(crate) enum DbusContactsError {
 }
 
 pub(crate) type CoDiContacts = Vec<CoDiContact>;
+pub(crate) type CoDiContactNumbers = Vec<CoDiContactNumber>;
 pub(crate) type CoDiDbusContactsResult =
     anyhow::Result<CoDiContacts, DbusContactsError>;
 
