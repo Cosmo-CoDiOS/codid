@@ -59,6 +59,7 @@ jobs:
           version: latest
           use-tool-cache: true
       - name: Build codid release for Linux-based ROMs.
+        id: build-linux
         if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
         uses: actions-rs/cargo@v1
         with:
@@ -67,6 +68,7 @@ jobs:
             --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
       - name: Build codid release for Android-based ROMs.
+        id: build-android
         if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
         uses: actions-rs/cargo@v1
         with:
@@ -75,10 +77,10 @@ jobs:
             --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
       - name: Zip up the artifacts
-        if: success()
+        if: ${{ steps.build-linux.outcome == 'success' || steps.build-android.outcome == 'success' }}
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{github.workspace }}/target/${{ matrix.target }}/debug/codictl
       - name: Upload debug nightly build
-        if: success()
+        if: ${{ steps.build-linux.outcome == 'success' || steps.build-android.outcome == 'success' }}
         uses: pyTooling/Actions/releaser@main
         with:
           tag: codid-nightly-${{ matrix.rom }}
