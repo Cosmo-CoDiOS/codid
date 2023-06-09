@@ -75,24 +75,13 @@ jobs:
           args: >-
             --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
           use-cross: true
-      - name: Upload debug nightly build (Linux-based ROMs)
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: pyTooling/Actions/releaser@main
-        with:
-          tag: codid-nightly-linux-${{ matrix.rom }}
-          rm: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-              /github/workspace/target/${{ matrix.target }}/debug/codid
-              /github/workspace/target/${{ matrix.target }}/debug/codictl
+      - name: Zip up the artifacts
+        run: zip -r ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip /github/workspace/target/${{ matrix.target }}/debug/codid /github/workspace/target/${{ matrix.target }}/debug/codictl
 
-      - name: Upload debug nightly build (Android-based ROMs)
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
+      - name: Upload debug nightly build
         uses: pyTooling/Actions/releaser@main
         with:
-          tag: codid-nightly-android
+          tag: codid-nightly-${{ matrix.rom }}
           rm: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-              /github/workspace/target/${{ matrix.target }}/debug/codid
-              /github/workspace/target/${{ matrix.target }}/debug/codictl
+          files: /github/workspace/codid-nightly-${{ matrix.rom }}.zip
