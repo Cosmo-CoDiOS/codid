@@ -21,12 +21,10 @@ use std::env;
 
 use clap::{ArgMatches, Command};
 
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-
 fn get_args() -> ArgMatches {
-    Command::new("codictl")
-        .version(VERSION)
-        .author("The Cosmo-CoDiOS Group")
+    Command::new(env!("CARGO_BIN_NAME"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
         .about("Scriptable client to the codid interface")
         .subcommand_required(true)
         .subcommand(Command::new("reset-stm32").about("Reset the STM32"))
