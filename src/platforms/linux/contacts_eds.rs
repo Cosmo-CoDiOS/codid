@@ -15,12 +15,20 @@ pub(crate) struct CoDiContactNumber {
 }
 
 impl CoDiContactNumber {
-    pub(crate) fn get_phone_type(&self) -> String {
-        self.phone_type.to_owned()
+    pub(crate) fn get_phone_type(&self) -> Option<String> {
+        if &String::from(self.phone_type) {
+            return None;
+        }
+
+        Some(String::from(self.phone_type))
     }
 
-    pub(crate) fn get_phone_number(&self) -> String {
-        self.number.to_owned()
+    pub(crate) fn get_phone_number(&self) -> Option<String> {
+        if &String::from(self.number) {
+            return None;
+        }
+
+        Some(String::from(self.number))
     }
 }
 
@@ -31,12 +39,20 @@ pub(crate) struct CoDiContact {
 }
 
 impl CoDiContact {
-    pub(crate) fn get_contact_name(&self) -> String {
-        self.name.to_owned()
+    pub(crate) fn get_contact_name(&self) -> Option<String> {
+        if &self.name.is_empty() {
+            return None;
+        }
+
+        Some(String::from(self.name))
     }
 
-    pub(crate) fn get_numbers(&self) -> CoDiContactNumbers {
-        self.phone.to_owned()
+    pub(crate) fn get_numbers(&self) -> Option<CoDiContactNumbers> {
+        if &self.phone.is_empty() {
+            return None;
+        }
+
+        Some(String::from(self.phone))
     }
 }
 
@@ -145,8 +161,8 @@ pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
                             let phone_number = value.clone();
 
                             contact_numbers.push(CoDiContactNumber {
-                                phone_type: phone_type.to_string(),
-                                number: phone_number.to_string(),
+                                phone_type: String::from(phone_type),
+                                number: String::from(phone_number),
                             });
                         }
                     }
