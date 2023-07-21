@@ -80,7 +80,7 @@ jobs:
         if: ${{ steps.build-linux.outcome == 'success' || steps.build-android.outcome == 'success' }}
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{github.workspace }}/target/${{ matrix.target }}/debug/codictl
       - name: Upload debug nightly build
-        if: ${{ steps.build-linux.outcome == 'success' || steps.build-android.outcome == 'success' }}
+        if: false
         uses: pyTooling/Actions/releaser@main
         with:
           tag: codid-nightly-${{ matrix.rom }}
