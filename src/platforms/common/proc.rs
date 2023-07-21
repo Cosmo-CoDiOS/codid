@@ -1,6 +1,7 @@
 //! Modules for interfacing with the `/proc` FS special files provided by the Cosmo Linux kernel.
 
 use std::fs;
+use std::fs::File;
 use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
@@ -35,20 +36,11 @@ const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 
 /// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting `CoDi`. This is done
 /// forcefully, and by doing it this way, `CoDi` has no way to power down itself.
-///
-/// When `CoDiOS` is running, as discovered during startup of the CLI, it will accept a 'safe power
-/// down' command to avoid corruption to flash.
 pub fn stm32_reset() -> ProcUtilResult {
     info!("Resetting CoDi...");
 
     trace!("Open fd for STM32 reset proc");
-    let mut proc = fs::OpenOptions::new() // don't create, only write to special file
-        .write(true)
-        .append(false)
-        .read(false)
-        .create(false)
-        .open(AEON_RESET_STM32_PROC)
-        .map_err(ProcUtilError::Stm32ProcIoErr)?;
+    let mut proc = open_proc_file(AEON_RESET_STM32_PROC)?;
 
     proc.write_all("1".as_bytes())
         .map_err(ProcUtilError::Stm32ResetErr)?;
@@ -78,13 +70,7 @@ pub fn stm32_reset() -> ProcUtilResult {
 pub fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
     trace!("Open fd for STM32 reset proc");
 
-    let mut proc = fs::OpenOptions::new() // don't create, only write to special file
-        .write(true)
-        .append(false)
-        .read(false)
-        .create(false)
-        .open(AEON_STM32_DL_FW_PROC)
-        .map_err(ProcUtilError::Stm32ProcIoErr)?;
+    let mut proc = open_proc_file(AEON_STM32_DL_FW_PROC)?;
 
     if in_out {
         // true, we're uploading (downloading from CoDi's PoV) firmware
@@ -98,4 +84,14 @@ pub fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
     }
 
     Ok(())
+}
+
+fn open_proc_file(file: &str) -> Result<File, ProcUtilError> {
+    fs::OpenOptions::new()
+        .write(true)
+        .append(false)
+        .read(false)
+        .create(false)
+        .open(file)
+        .map_err(ProcUtilError::Stm32ProcIoErr)
 }
