@@ -8,4 +8,4 @@
     feature = "nixos",
     not(feature = "android"),
 ))]
-pub(crate) mod contacts_dbus;
+pub(crate) mod contacts_eds;
