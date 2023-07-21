@@ -49,16 +49,16 @@ fn main() -> Result<(), anyhow::Error> {
 
     match args.subcommand() {
         Some(("reset-stm32", _)) => {
-            codid::platforms::common::proc::stm32_reset()
+            codid::platforms::common::stm32_reset()
                 .context("Unable to reset the STM32 at this time.")?;
         }
         Some(("enter-stm32-bootloader", _)) => {
-            codid::platforms::common::proc::stm32_bootloader_dl(true).context(
+            codid::platforms::common::stm32_bootloader_dl(true).context(
                 "Unable to tell the STM32 to enter into download mode.",
             )?;
         }
         Some(("exit-stm32-bootloader", _)) => {
-            codid::platforms::common::proc::stm32_bootloader_dl(false)
+            codid::platforms::common::stm32_bootloader_dl(false)
                 .context("Unable to tell the STM32 to exit download mode.")?;
         }
         _ => {
