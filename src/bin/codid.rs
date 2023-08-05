@@ -94,7 +94,6 @@ fn get_args() -> ArgMatches {
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
-        .about("Cross-platform interface to the Cosmo Communicator's cover display")
         .arg(Arg::new("config")
             .long("config")
             .short('c')
