@@ -94,16 +94,16 @@ fn get_args() -> ArgMatches {
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .subcommand_required(true)
-        .arg(Arg::new("config")
-            .long("config")
-            .short('c')
-            .value_name("FILE")
-            .value_parser(value_parser!(PathBuf))
-            .default_value(get_default_cfg_path()
-                .into_os_string())
-            .help("Path to TOML configuration"))
-        .subcommand(Command::new("spawn")
-            .about("Starts the daemon."))
+        .arg(
+            Arg::new("config")
+                .long("config")
+                .short('c')
+                .value_name("FILE")
+                .value_parser(value_parser!(PathBuf))
+                .default_value(get_default_cfg_path().into_os_string())
+                .help("Path to TOML configuration"),
+        )
+        .subcommand(Command::new("spawn").about("Starts the daemon."))
         .get_matches()
 }
 
