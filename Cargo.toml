@@ -23,8 +23,8 @@ path = "src/lib.rs"
 
 [features]
 default = []
-stock-codi = ["codi_protocol_common", "codi_stock_protocol"]
-codios-codi = ["codi_protocol_common", "codi_os_protocol"]
+stock-codi = ["codi_stock_protocol"]
+codios-codi = ["codi_os_protocol"]
 android = ["android_logger"]
 ubports = ["zbus", "zvariant", "ical"]
 gemian = ["zbus", "zvariant", "ical"]
@@ -59,7 +59,6 @@ optional = true
 [dependencies.codi_protocol_common]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
-optional = true
 
 [dependencies.codi_stock_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
