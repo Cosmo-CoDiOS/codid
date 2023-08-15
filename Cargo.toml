@@ -11,13 +11,6 @@ authors = ["Dom Rodriguez <shymega@shymega.org.uk>"]
 keywords = ["cover-display", "codi", "planet-computers"]
 edition = "2021"
 
-[package.metadata.generate-rpm]
-assets = [
-    { source = "target/release/codid", dest = "/usr/bin/codid", mode = "755", config = false, doc = false },
-    { source = "target/release/codictl", dest = "/usr/bin/codictl", mode = "755", config = false, doc = false },
-    { source = "assets/lib/systemd/user/codid.service", dest = "/usr/lib/systemd/user/codid.service", config = true, doc = false }
-]
-
 [[bin]]
 name = "codid"
 
