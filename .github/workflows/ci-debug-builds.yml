@@ -5,10 +5,6 @@ on:
     schedule:
         - cron: 0 0 * * *
 
-concurrency:
-    group: gh-ref-${{ github.ref }}
-    cancel-in-progress: true
-
 jobs:
     build-android-debug:
         uses: ./.github/workflows/ci-debug-builds-android.yml

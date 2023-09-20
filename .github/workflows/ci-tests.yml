@@ -4,10 +4,6 @@ on:
     push:
     workflow_dispatch:
 
-concurrency:
-    group: gh-ref-${{ github.ref }}
-    cancel-in-progress: true
-
 jobs:
     test-android:
         uses: ./.github/workflows/ci-tests-android.yml
