@@ -34,11 +34,9 @@ jobs:
                   profile: minimal
             - name: Install Cross
               if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: actions-rs/install@v0.1
+              uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
               with:
-                  crate: cross
-                  version: latest
-                  use-tool-cache: true
+                  packages: cross
             - name: Build codid release for Linux-based ROMs.
               id: build-linux
               uses: actions-rs/cargo@v1
