@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
+use log::{info,trace,debug};
 
 /// `ProcUtilError` is an enum of different `Error` types and reasons.
 #[allow(clippy::enum_variant_names)]
@@ -22,6 +23,10 @@ pub enum ProcUtilError {
     /// file' for resetting the STM32 into 'user mode'.
     #[error("Unable to bring the STM32 out of Download mode.")]
     Stm32ResetDownloadErr(#[source] io::Error),
+    /// `Stm32WakeErr` is an error returned when we're unable to write to the 'special
+    /// file' for resetting the STM32 into 'user mode'.
+    #[error("Unable to wake the STM32.")]
+    Stm32WakeErr(#[source] io::Error),
     /// `Stm32ProcIoError` is an error returned when initialising the file descriptor.
     #[error("Unable to setup a file descriptor for special /proc file.")]
     Stm32ProcIoErr(#[source] io::Error),
@@ -33,6 +38,7 @@ pub type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
 
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
+const AEON_WAKE_STM32_PROC: &str = "/proc/AEON_WAKE_STM32";
 
 /// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting `CoDi`. This is done
 /// forcefully, and by doing it this way, `CoDi` has no way to power down itself.
@@ -57,6 +63,24 @@ pub fn stm32_reset() -> ProcUtilResult {
     thread::sleep(Duration::from_secs(4));
 
     info!("CoDi should now be started."); // for CoDiOS, should we wait for a 'READY' signal?
+
+    Ok(())
+}
+
+/// `stm32_wake` flips the GPIO pins on the STM32, thus waking up `CoDi` (IRQ)
+pub fn stm32_wake() -> ProcUtilResult {
+    info!("Waking CoDi...");
+
+    let mut proc = open_proc_file(AEON_WAKE_STM32_PROC)?;
+
+    proc.write_all("1".as_bytes())
+        .map_err(ProcUtilError::Stm32WakeErr)?;
+
+    debug!("Wait a little while....");
+    thread::sleep(Duration::from_secs(2));
+
+    proc.write_all("0".as_bytes())
+        .map_err(ProcUtilError::Stm32WakeErr)?;
 
     Ok(())
 }
