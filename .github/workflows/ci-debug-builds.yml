@@ -1,89 +1,19 @@
-name: codid CI debug builder
+name: Nightly Builders
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *"
-
-env:
-  CARGO_TERM_COLOR: always
+    workflow_dispatch:
+    schedule:
+        - cron: 0 0 * * *
 
 concurrency:
-  group: gh-ref-${{ github.ref }}
-  cancel-in-progress: true
+    group: gh-ref-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build-debug-nightly:
-    name: >-
-        Nightly builder for `codid`. Target ROM: ${{ matrix.rom }}, Target Arch: ${{ matrix.target }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        rom:
-          [
-            "gemian",
-            "sailfishos",
-            "nixos",
-            "postmarketos",
-            "droidian",
-            "android",
-          ]
-        target:
-          [
-            "aarch64-unknown-linux-musl",
-            "x86_64-unknown-linux-musl",
-            "aarch64-linux-android",
-          ]
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-      - name: Cache Rust assets
-        id: rust-cache
-        uses: Swatinem/rust-cache@v2
-      - name: Configure Rust
-        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.67.0
-          default: true
-          components: llvm-tools-preview
-          override: true
-          target: ${{ matrix.target }}
-          profile: minimal
-      - name: Install Cross
-        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
-      - name: Build codid release for Linux-based ROMs.
-        id: build-linux
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: >-
-            --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
-          use-cross: true
-      - name: Build codid release for Android-based ROMs.
-        id: build-android
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: >-
-            --all --locked --verbose  --features=stock-codi,codios-codi,${{ matrix.rom}} --target=${{ matrix.target }}
-          use-cross: true
-      - name: Zip up the artifacts
-        if: ${{ steps.build-linux.outcome == 'success' || steps.build-android.outcome == 'success' }}
-        run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{github.workspace }}/target/${{ matrix.target }}/debug/codictl
-      - name: Upload debug nightly build
-        if: false
-        uses: pyTooling/Actions/releaser@main
-        with:
-          tag: codid-nightly-${{ matrix.rom }}
-          rm: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: /github/workspace/codid-nightly-${{ matrix.rom }}.zip
+    build-android-debug:
+        uses: ./.github/workflows/ci-debug-builds-android.yml
+        secrets: inherit
+
+    build-linux-debug:
+        uses: ./.github/workflows/ci-debug-builds-linux.yml
+        secrets: inherit

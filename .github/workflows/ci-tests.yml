@@ -1,119 +1,18 @@
-name: CI test workflow
-on:
-  push:
-  workflow_dispatch:
-  pull_request:
-    branches: [main]
+name: CI Tests
 
-env:
-  CARGO_TERM_COLOR: always
+on:
+    push:
+    workflow_dispatch:
+
+concurrency:
+    group: gh-ref-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  run-tests:
-    name: Run tests on supported ROMs and targets.
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        rom:
-          [
-            "gemian",
-            "sailfishos",
-            "nixos",
-            "postmarketos",
-            "droidian",
-            "android",
-          ]
-        target:
-          [
-            "aarch64-unknown-linux-musl",
-            "x86_64-unknown-linux-musl",
-            "aarch64-linux-android",
-          ]
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-      - name: Cache Rust assets
-        id: rust-cache
-        uses: Swatinem/rust-cache@v2
-      - name: Configure Rust
-        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: "actions-rs/toolchain@v1"
-        with:
-          toolchain: 1.67.0
-          profile: minimal
-          components: clippy,rustfmt
-          override: true
-          target: ${{ matrix.target }}
-          default: true
-      - name: Install Cross
-        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: actions-rs/install@v0.1
-        with:
-          crate: cross
-          version: latest
-          use-tool-cache: true
+    test-android:
+        uses: ./.github/workflows/ci-tests-android.yml
+        secrets: inherit
 
-      - name: Run Linux-targeted debug build of codid
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Linux-targeted tests of codid
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Linux-targeted checks of codid
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Linux-targeted Clippy tests of codid
-        if: ${{ matrix.rom != 'android' && matrix.target != 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Android-targeted debug build of codid
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Android-targeted tests of codid
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Android-targeted checks of codid
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
-
-      - name: Run Android-targeted Clippy tests of codid
-        if: ${{ matrix.rom == 'android' && matrix.target == 'aarch64-linux-android' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-          use-cross: true
+    test-linux:
+        uses: ./.github/workflows/ci-tests-linux.yml
+        secrets: inherit

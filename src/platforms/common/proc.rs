@@ -41,8 +41,7 @@ const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 const AEON_WAKE_STM32_PROC: &str = "/proc/AEON_WAKE_STM32";
 
-/// `hw_reset_stm32` flips the GPIO pins on the STM32, thus resetting `CoDi`. This is done
-/// forcefully, and by doing it this way, `CoDi` has no way to power down itself.
+/// `stm32_reset` flips the GPIO pins on the STM32, thus resetting `CoDi`.
 pub fn stm32_reset() -> ProcUtilResult {
     info!("Resetting CoDi...");
 
