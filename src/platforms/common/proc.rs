@@ -16,11 +16,11 @@ pub enum ProcUtilError {
     Stm32ResetErr(#[source] io::Error),
     /// `Stm32SetDownloadErr` is an error returned when `codid` is unable to write to the 'special
     /// file' for resetting the STM32 into 'bootloader mode'.
-    #[error("Unable to set the STM32 into Download mode.")]
+    #[error("Unable to bring the STM32 into Download mode.")]
     Stm32SetDownloadErr(#[source] io::Error),
     /// `Stm32ResetDownloadErr` is an error returned when we're unable to write to the 'special
     /// file' for resetting the STM32 into 'user mode'.
-    #[error("Unable to reset the STM32 out of Download mode.")]
+    #[error("Unable to bring the STM32 out of Download mode.")]
     Stm32ResetDownloadErr(#[source] io::Error),
     /// `Stm32ProcIoError` is an error returned when initialising the file descriptor.
     #[error("Unable to setup a file descriptor for special /proc file.")]
