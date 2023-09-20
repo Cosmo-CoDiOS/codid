@@ -49,13 +49,14 @@ jobs:
                       }} --target=${{ matrix.target }}
                   use-cross: true
             - name: Zip up the artifacts
+              id: zipup
               if: ${{ steps.build-linux.outcome == 'success' }}
               run:
                   zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}-${{ matrix.target
                   }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{
                   github.workspace }}/target/${{ matrix.target }}/debug/codictl
             - name: Upload debug nightly build
-              if: false
+              if: ${{ steps.zipup.outcome == 'success' }}
               uses: pyTooling/Actions/releaser@main
               with:
                   tag: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
