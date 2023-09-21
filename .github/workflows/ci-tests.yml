@@ -3,6 +3,7 @@ name: CI Tests
 
 on:
   push:
+    paths: ["src/", "Cargo.toml", "Cargo.lock", "rust-toolchain"]
   workflow_dispatch:
 
 jobs:
