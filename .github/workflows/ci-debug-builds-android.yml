@@ -52,6 +52,7 @@ jobs:
         with:
           draft: false
           prerelease: true
+          body: "Nightly build of `codid` for Android-based ROMs."
           release_name: codid-nightly-android
           tag_name: codid-nightly-android
         env:

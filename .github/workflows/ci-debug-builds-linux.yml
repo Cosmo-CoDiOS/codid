@@ -57,6 +57,7 @@ jobs:
         with:
           draft: false
           prerelease: true
+          body: "Nightly build of `codid` for Linux-based ROMS: ${{ matrix.rom }}, on target: ${{ matrix.target }}"
           release_name: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
           tag_name: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
         env:
