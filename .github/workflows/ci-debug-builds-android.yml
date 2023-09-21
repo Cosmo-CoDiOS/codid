@@ -44,8 +44,18 @@ jobs:
         id: zipup
         if: ${{ steps.build-android.outcome == 'success' }}
         run: zip ${{ github.workspace }}/codid-nightly-android.zip ${{ github.workspace }}/target/aarch64-linux-android/debug/codid ${{github.workspace }}/target/aarch64-linux-android/debug/codictl
-      - name: Upload debug nightly build
+      - name: Create nightly release
         if: ${{ steps.zipup.outcome == 'success' }}
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: true
+          release_name: codid-nightly-android
+          tag_name: codid-nightly-android
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload debug nightly build
         run: gh release upload codid-nightly-android ${{ github.workspace }}/codid-nightly-android.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

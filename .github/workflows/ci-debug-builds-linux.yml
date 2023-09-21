@@ -50,8 +50,18 @@ jobs:
         id: zipup
         if: ${{ steps.build-linux.outcome == 'success' }}
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}-${{ matrix.target }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{ github.workspace }}/target/${{ matrix.target }}/debug/codictl
-      - name: Upload debug nightly build
+      - name: Create nightly release
+        continue-on-error: true
         if: ${{ steps.zipup.outcome == 'success' }}
+        uses: actions/create-release@v1
+        with:
+          draft: false
+          prerelease: true
+          release_name: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
+          tag_name: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload debug nightly build
         run: gh release upload codid-nightly-${{ matrix.rom }}-${{ matrix.target }} ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}-${{ matrix.target }}.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
