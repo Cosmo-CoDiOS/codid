@@ -12,7 +12,7 @@ jobs:
     name: Nightly builds for ${{ matrix.rom }}/${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         rom: [gemian, sailfishos, ubports, nixos, postmarketos, droidian]
         target: [aarch64-unknown-linux-musl, x86_64-unknown-linux-musl]
