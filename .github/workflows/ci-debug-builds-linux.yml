@@ -52,10 +52,4 @@ jobs:
         run: zip ${{ github.workspace }}/codid-nightly-${{ matrix.rom }}-${{ matrix.target }}.zip ${{ github.workspace }}/target/${{ matrix.target }}/debug/codid ${{ github.workspace }}/target/${{ matrix.target }}/debug/codictl
       - name: Upload debug nightly build
         if: ${{ steps.zipup.outcome == 'success' }}
-        uses: pyTooling/Actions/releaser@main
-        with:
-          tag: codid-nightly-${{ matrix.rom }}-${{ matrix.target }}
-          rm: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: /github/workspace/codid-nightly-${{ matrix.rom }}-${{ matrix.target
-            }}.zip
+        run: gh release upload codid-nightly-${{ matrix.rom }}-${{ matrix.target }} /github/workspace/codid-nightly-${{ matrix.rom }}-${{ matrix.target }}.zip --clobber
