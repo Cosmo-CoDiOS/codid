@@ -1,55 +1,54 @@
+---
 name: Nightly builder (Android)
 
 on:
-    workflow_call:
+  workflow_call:
 
 env:
-    CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always
 
 jobs:
-    build-android-nightly:
-        name: Android Nightly Builder
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v4
-            - name: Cache Rust assets
-              id: rust-cache
-              uses: Swatinem/rust-cache@v2
-            - name: Configure Rust
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: 1.72.1
-                  default: true
-                  components: llvm-tools-preview
-                  override: true
-                  target: aarch64-linux-android
-                  profile: minimal
-            - name: Install Cross
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
-              with:
-                  packages: cross
-            - name: Build nightly for Android
-              id: build-android
-              uses: actions-rs/cargo@v1
-              with:
-                  command: build
-                  args: >-
-                      --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
-                  use-cross: true
-            - name: Zip up the artifacts
-              id: zipup
-              if: ${{ steps.build-android.outcome == 'success' }}
-              run:
-                  zip ${{ github.workspace }}/codid-nightly-android.zip ${{ github.workspace
-                  }}/target/aarch64-linux-android/debug/codid ${{github.workspace }}/target/aarch64-linux-android/debug/codictl
-            - name: Upload debug nightly build
-              if: ${{ steps.zipup.outcome == 'success' }}
-              uses: pyTooling/Actions/releaser@main
-              with:
-                  tag: codid-nightly-android
-                  rm: true
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  files: /github/workspace/codid-nightly-android.zip
+  build-android-nightly:
+    name: Android Nightly Builder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Cache Rust assets
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Rust
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.72.1
+          default: true
+          components: llvm-tools-preview
+          override: true
+          target: aarch64-linux-android
+          profile: minimal
+      - name: Install Cross
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
+        with:
+          packages: cross
+      - name: Build nightly for Android
+        id: build-android
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: >-
+            --all --locked --verbose  --features=stock-codi,codios-codi,android --target=aarch64-linux-android
+          use-cross: true
+      - name: Zip up the artifacts
+        id: zipup
+        if: ${{ steps.build-android.outcome == 'success' }}
+        run: zip ${{ github.workspace }}/codid-nightly-android.zip ${{ github.workspace }}/target/aarch64-linux-android/debug/codid ${{github.workspace }}/target/aarch64-linux-android/debug/codictl
+      - name: Upload debug nightly build
+        if: ${{ steps.zipup.outcome == 'success' }}
+        uses: pyTooling/Actions/releaser@main
+        with:
+          tag: codid-nightly-android
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: /github/workspace/codid-nightly-android.zip

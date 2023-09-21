@@ -1,54 +1,55 @@
+---
 name: Android CI Tests
 
 on:
-    workflow_call:
+  workflow_call:
 
 env:
-    CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always
 
 jobs:
-    run-android-rom-tests:
-        name: Run tests for Android
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v4
-            - name: Cache Rust assets
-              id: rust-cache
-              uses: Swatinem/rust-cache@v2
-            - name: Configure Rust
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: "actions-rs/toolchain@v1"
-              with:
-                  toolchain: 1.72.1
-                  profile: minimal
-                  components: clippy,rustfmt
-                  override: true
-                  target: aarch64-linux-android
-                  default: true
-            - name: Install Cross
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
-              with:
-                  packages: cross
+  run-android-rom-tests:
+    name: Run tests for Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Cache Rust assets
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Rust
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.72.1
+          profile: minimal
+          components: clippy,rustfmt
+          override: true
+          target: aarch64-linux-android
+          default: true
+      - name: Install Cross
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
+        with:
+          packages: cross
 
-            - name: Run Android-targeted tests
-              uses: actions-rs/cargo@v1
-              with:
-                  command: test
-                  args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
-                  use-cross: true
+      - name: Run Android-targeted tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
+          use-cross: true
 
-            - name: Run Android-targeted Cargo checks
-              uses: actions-rs/cargo@v1
-              with:
-                  command: check
-                  args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
-                  use-cross: true
+      - name: Run Android-targeted Cargo checks
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
+          use-cross: true
 
-            - name: Run Android-targeted Clippy checks
-              uses: actions-rs/cargo@v1
-              with:
-                  command: clippy
-                  args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
-                  use-cross: true
+      - name: Run Android-targeted Clippy checks
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --features=android,stock-codi,codios-codi --target=aarch64-linux-android
+          use-cross: true

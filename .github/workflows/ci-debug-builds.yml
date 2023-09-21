@@ -1,15 +1,16 @@
+---
 name: Nightly Builders
 
 on:
-    workflow_dispatch:
-    schedule:
-        - cron: 0 0 * * *
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
 
 jobs:
-    build-android-debug:
-        uses: ./.github/workflows/ci-debug-builds-android.yml
-        secrets: inherit
+  build-android-debug:
+    uses: ./.github/workflows/ci-debug-builds-android.yml
+    secrets: inherit
 
-    build-linux-debug:
-        uses: ./.github/workflows/ci-debug-builds-linux.yml
-        secrets: inherit
+  build-linux-debug:
+    uses: ./.github/workflows/ci-debug-builds-linux.yml
+    secrets: inherit

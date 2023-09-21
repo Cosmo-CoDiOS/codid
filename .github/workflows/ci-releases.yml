@@ -1,21 +1,24 @@
+---
 name: Release Builders
 
 on:
-    workflow_run:
-        workflows: ["CI test workflow"]
-        types: [completed]
-        branches: [main]
+  workflow_run:
+    workflows: [CI test workflow]
+    types: [completed]
+    branches: [main]
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
   build-android-release:
-    if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion
+      == 'success' }}
     uses: ./.github/workflows/ci-release-builds-android.yml
     secrets: inherit
 
   build-linux-release:
-    if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') && github.event.workflow_run.conclusion
+      == 'success' }}
     uses: ./.github/workflows/ci-release-builds-linux.yml
     secrets: inherit

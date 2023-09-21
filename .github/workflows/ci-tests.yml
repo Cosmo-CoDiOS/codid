@@ -1,14 +1,15 @@
+---
 name: CI Tests
 
 on:
-    push:
-    workflow_dispatch:
+  push:
+  workflow_dispatch:
 
 jobs:
-    test-android:
-        uses: ./.github/workflows/ci-tests-android.yml
-        secrets: inherit
+  test-android:
+    uses: ./.github/workflows/ci-tests-android.yml
+    secrets: inherit
 
-    test-linux:
-        uses: ./.github/workflows/ci-tests-linux.yml
-        secrets: inherit
+  test-linux:
+    uses: ./.github/workflows/ci-tests-linux.yml
+    secrets: inherit

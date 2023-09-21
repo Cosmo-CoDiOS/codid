@@ -1,68 +1,63 @@
+---
 name: Linux-based ROM CI tests
 
 on:
-    workflow_call:
+  workflow_call:
 
 env:
-    CARGO_TERM_COLOR: always
+  CARGO_TERM_COLOR: always
 
 jobs:
-    run-linux-rom-tests:
-        name: CI tests for ${{ matrix.rom }}/${{ matrix.target }}
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: true
-            matrix:
-                rom:
-                    [
-                        "gemian",
-                        "sailfishos",
-                        "ubports",
-                        "nixos",
-                        "postmarketos",
-                        "droidian",
-                    ]
-                target:
-                    ["aarch64-unknown-linux-musl", "x86_64-unknown-linux-musl"]
-        steps:
-            - name: Checkout sources
-              uses: actions/checkout@v4
-            - name: Cache Rust assets
-              id: rust-cache
-              uses: Swatinem/rust-cache@v2
-            - name: Configure Rust
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: "actions-rs/toolchain@v1"
-              with:
-                  toolchain: 1.72.1
-                  profile: minimal
-                  components: clippy,rustfmt
-                  override: true
-                  target: ${{ matrix.target }}
-                  default: true
-            - name: Install Cross
-              if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-              uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
-              with:
-                  packages: cross
+  run-linux-rom-tests:
+    name: CI tests for ${{ matrix.rom }}/${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        rom: [gemian, sailfishos, ubports, nixos, postmarketos, droidian]
+        target: [aarch64-unknown-linux-musl, x86_64-unknown-linux-musl]
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Cache Rust assets
+        id: rust-cache
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Rust
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.72.1
+          profile: minimal
+          components: clippy,rustfmt
+          override: true
+          target: ${{ matrix.target }}
+          default: true
+      - name: Install Cross
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: brndnmtthws/rust-action-cargo-binstall@v1.0.0
+        with:
+          packages: cross
 
-            - name: Run Linux-targeted tests of codid
-              uses: actions-rs/cargo@v1
-              with:
-                  command: test
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
+      - name: Run Linux-targeted tests of codid
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target
+            }}
+          use-cross: true
 
-            - name: Run Linux-targeted checks of codid
-              uses: actions-rs/cargo@v1
-              with:
-                  command: check
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
+      - name: Run Linux-targeted checks of codid
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target
+            }}
+          use-cross: true
 
-            - name: Run Linux-targeted Clippy tests of codid
-              uses: actions-rs/cargo@v1
-              with:
-                  command: clippy
-                  args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target }}
-                  use-cross: true
+      - name: Run Linux-targeted Clippy tests of codid
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --features=${{ matrix.rom }},stock-codi,codios-codi --target=${{ matrix.target
+            }}
+          use-cross: true
