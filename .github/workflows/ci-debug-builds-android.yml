@@ -46,6 +46,6 @@ jobs:
         run: zip ${{ github.workspace }}/codid-nightly-android.zip ${{ github.workspace }}/target/aarch64-linux-android/debug/codid ${{github.workspace }}/target/aarch64-linux-android/debug/codictl
       - name: Upload debug nightly build
         if: ${{ steps.zipup.outcome == 'success' }}
-        run: gh release upload codid-nightly-android /github/workspace/codid-nightly-android.zip --clobber
+        run: gh release upload codid-nightly-android ${{ github.workspace }}/codid-nightly-android.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
