@@ -46,6 +46,7 @@ jobs:
         run: zip ${{ github.workspace }}/codid-nightly-android.zip ${{ github.workspace }}/target/aarch64-linux-android/debug/codid ${{github.workspace }}/target/aarch64-linux-android/debug/codictl
       - name: Create nightly release
         if: ${{ steps.zipup.outcome == 'success' }}
+        continue-on-error: true
         uses: actions/create-release@v1
         id: create_release
         with:
