@@ -24,7 +24,7 @@ path = "src/lib.rs"
 [features]
 default = []
 stock-codi = ["codi_stock_protocol"]
-codios-codi = ["codi_os_protocol"]
+codios-codi = ["codi_os_protocol", "codi_boot_protocol"]
 android = ["android_logger"]
 ubports = ["zbus", "zvariant", "ical"]
 gemian = ["zbus", "zvariant", "ical"]
@@ -68,6 +68,7 @@ optional = true
 [dependencies.codi_boot_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
 branch = "main"
+optional = true
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = { version = "0.13", optional = true }
