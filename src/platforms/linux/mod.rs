@@ -1,11 +1,4 @@
 //! Generic Linux-targeted module for shared code.
-#[cfg(all(
-    feature = "ubports",
-    feature = "gemian",
-    feature = "droidian",
-    feature = "postmarket",
-    feature = "sailfish",
-    feature = "nixos",
-    not(feature = "android"),
-))]
+
+#[cfg(all(target_os = "linux", not(target_os = "android")))]
 pub(crate) mod contacts_eds;
