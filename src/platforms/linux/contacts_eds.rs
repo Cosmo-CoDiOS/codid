@@ -76,7 +76,10 @@ pub(crate) enum DbusContactsError {
 
 pub(crate) type CoDiContacts = Vec<CoDiContact>;
 pub(crate) type CoDiContactNumbers = Vec<CoDiContactNumber>;
-pub(crate) type CoDiDbusContactsResult<T = CoDiContacts, E = DbusContactsError> = anyhow::Result<T, E>;
+pub(crate) type CoDiDbusContactsResult<
+    T = CoDiContacts,
+    E = DbusContactsError,
+> = anyhow::Result<T, E>;
 
 pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
     let bus = Connection::session()
@@ -167,7 +170,7 @@ pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
             }
         }
 
-        if contact_name.is_empty() && contact_numbers.is_empty()  {
+        if contact_name.is_empty() && contact_numbers.is_empty() {
             continue;
         }
 
