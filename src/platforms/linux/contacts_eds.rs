@@ -1,4 +1,4 @@
-//! `contacts_dbus` gets contacts from Evolution's EDS interface, for inserting into CoDi over UART.
+//! `contacts_eds` gets contacts from Evolution's EDS interface, for inserting into CoDi over UART.
 
 #![allow(dead_code)]
 
@@ -16,19 +16,19 @@ pub(crate) struct CoDiContactNumber {
 
 impl CoDiContactNumber {
     pub(crate) fn get_phone_type(&self) -> Option<String> {
-        if &String::from(self.phone_type) {
+        if self.phone_type.is_empty() {
             return None;
         }
 
-        Some(String::from(self.phone_type))
+        Some(String::from(&self.phone_type))
     }
 
     pub(crate) fn get_phone_number(&self) -> Option<String> {
-        if &String::from(self.number) {
+        if self.number.is_empty() {
             return None;
         }
 
-        Some(String::from(self.number))
+        Some(String::from(&self.number))
     }
 }
 
@@ -40,23 +40,23 @@ pub(crate) struct CoDiContact {
 
 impl CoDiContact {
     pub(crate) fn get_contact_name(&self) -> Option<String> {
-        if &self.name.is_empty() {
+        if self.name.is_empty() {
             return None;
         }
 
-        Some(String::from(self.name))
+        Some(String::from(&self.name))
     }
 
     pub(crate) fn get_numbers(&self) -> Option<CoDiContactNumbers> {
-        if &self.phone.is_empty() {
+        if self.phone.is_empty() {
             return None;
         }
 
-        Some(String::from(self.phone))
+        Some(self.phone.clone())
     }
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq)]
 pub(crate) enum DbusContactsError {
     #[error("Failed to connect to the D-Bus User Session bus.")]
     SessionBusConnectFailure(#[source] ZbusError),
@@ -76,8 +76,7 @@ pub(crate) enum DbusContactsError {
 
 pub(crate) type CoDiContacts = Vec<CoDiContact>;
 pub(crate) type CoDiContactNumbers = Vec<CoDiContactNumber>;
-pub(crate) type CoDiDbusContactsResult =
-    anyhow::Result<CoDiContacts, DbusContactsError>;
+pub(crate) type CoDiDbusContactsResult<T = CoDiContacts, E = DbusContactsError> = anyhow::Result<T, E>;
 
 pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
     let bus = Connection::session()
@@ -137,46 +136,38 @@ pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
         let mut contact_numbers: Vec<CoDiContactNumber> = Vec::new();
         'vcardloop: for line in reader {
             let line = match line {
-                Ok(res) => res,
+                Ok(x) => x,
                 _ => continue 'vcardloop,
             };
 
-            for prop in &line.properties {
-                let params = match &prop.params {
-                    Some(res) => res,
-                    _ => continue 'vcardloop,
-                };
-
-                if prop.name == "FN" {
-                    contact_name = match &prop.value {
-                        Some(res) => res.clone(),
-                        _ => continue 'vcardloop,
-                    };
-                }
-
-                if prop.name == "TEL" {
-                    for entry in params {
-                        if &entry.0 == "TYPE" {
-                            let phone_type = entry.1[0].clone();
-                            let phone_number = value.clone();
-
-                            contact_numbers.push(CoDiContactNumber {
-                                phone_type: String::from(phone_type),
-                                number: String::from(phone_number),
-                            });
+            for prop in line.properties {
+                if let Some(params) = &prop.params {
+                    if prop.name == "FN" {
+                        if let Some(x) = &prop.value {
+                            contact_name = x.to_string();
+                        } else {
+                            continue 'vcardloop;
                         }
                     }
-                }
 
+                    if prop.name == "TEL" {
+                        for entry in params.iter().filter(|x| x.0 == "TYPE") {
+                            contact_numbers.push(CoDiContactNumber {
+                                phone_type: String::from(&entry.1[0]),
+                                number: String::from(
+                                    prop.value.clone().unwrap(),
+                                ),
+                            });
+                        }
+                    } else {
+                        continue 'vcardloop;
+                    }
+                }
                 break 'vcardloop;
             }
         }
 
-        if contact_name.is_empty() {
-            continue;
-        }
-
-        if contact_numbers.is_empty() {
+        if contact_name.is_empty() && contact_numbers.is_empty()  {
             continue;
         }
 
