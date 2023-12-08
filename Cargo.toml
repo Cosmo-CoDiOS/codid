@@ -22,9 +22,11 @@ name = "codid"
 path = "src/lib.rs"
 
 [features]
-default = []
+default = ["stock-codi-proc"]
 stock-codi = ["codi_stock_protocol"]
 codios-codi = ["codi_os_protocol", "codi_boot_protocol"]
+stock-codi-proc = []
+modern-codi-proc = []
 linux = ["zbus", "zvariant", "ical"]
 android = ["android_logger"]
 ubports = ["linux"]
