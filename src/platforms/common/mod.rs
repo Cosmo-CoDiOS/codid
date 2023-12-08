@@ -2,4 +2,4 @@
 
 mod proc;
 
-pub use proc::{stm32_bootloader_dl, stm32_reset};
+pub use proc::{stm32_bootloader_dl, stm32_reset, stm32_wake};

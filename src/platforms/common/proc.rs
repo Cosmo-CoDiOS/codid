@@ -1,17 +1,17 @@
 //! Modules for interfacing with the `/proc` FS special files provided by the Cosmo Linux kernel.
 #![allow(dead_code)]
 
+use log::{debug, info, trace};
 use std::fs;
 use std::fs::File;
 use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
-use log::{info,trace,debug};
 
 /// `ProcUtilError` is an enum of different `Error` types and reasons.
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, thiserror::Error)]
-pub enum ProcUtilError {
+pub(crate) enum ProcUtilError {
     /// `Stm32ResetErr` is an error returned when we're unable to write to the 'special file' for
     /// rebooting the STM32.
     #[error("Unable to reset the STM32.")]
@@ -25,7 +25,7 @@ pub enum ProcUtilError {
     #[error("Unable to bring the STM32 out of Download mode.")]
     Stm32ResetDownloadErr(#[source] io::Error),
     /// `Stm32WakeErr` is an error returned when we're unable to write to the 'special
-    /// file' for resetting the STM32 into 'user mode'.
+    /// file' for waking up the STM32 via the IRQ pin.
     #[error("Unable to wake the STM32.")]
     Stm32WakeErr(#[source] io::Error),
     /// `Stm32ProcIoError` is an error returned when initialising the file descriptor.
@@ -35,14 +35,14 @@ pub enum ProcUtilError {
 
 /// `ProcUtilResult` acts as an abstraction over `anyhow` and `thiserror`, used for handling errors
 /// produced by the `crate::platforms::common::proc` module.
-pub type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
+pub(crate) type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
 
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 const AEON_WAKE_STM32_PROC: &str = "/proc/AEON_WAKE_STM32";
 
-/// `stm32_reset` flips the GPIO pins on the STM32, thus resetting `CoDi`.
-pub fn stm32_reset() -> ProcUtilResult {
+/// `stm32_reset` resets the STM32.
+pub(crate) fn stm32_reset() -> ProcUtilResult {
     info!("Resetting CoDi...");
 
     trace!("Open fd for STM32 reset proc");
@@ -51,7 +51,7 @@ pub fn stm32_reset() -> ProcUtilResult {
     proc.write_all("1".as_bytes())
         .map_err(ProcUtilError::Stm32ResetErr)?;
 
-    debug!("Wait a little while....");
+    trace!("Wait a little while....");
     thread::sleep(Duration::from_secs(2));
 
     info!("Starting CoDi again, please wait a moment...");
@@ -59,16 +59,16 @@ pub fn stm32_reset() -> ProcUtilResult {
     proc.write_all("0".as_bytes())
         .map_err(ProcUtilError::Stm32ResetErr)?;
 
-    debug!("Wait for CoDi to start....");
+    trace!("Wait for CoDi to start....");
     thread::sleep(Duration::from_secs(4));
 
-    info!("CoDi should now be started."); // for CoDiOS, should we wait for a 'READY' signal?
+    info!("CoDi should now be started."); // NOTE: for CoDiOS, should we wait for a 'READY' signal?
 
     Ok(())
 }
 
-/// `stm32_wake` flips the GPIO pins on the STM32, thus waking up `CoDi` (IRQ)
-pub fn stm32_wake() -> ProcUtilResult {
+/// `stm32_wake` wakes up the STM32 via the IRQ GPIO pins.
+pub(crate) fn stm32_wake() -> ProcUtilResult {
     info!("Waking CoDi...");
 
     let mut proc = open_proc_file(AEON_WAKE_STM32_PROC)?;
@@ -76,7 +76,7 @@ pub fn stm32_wake() -> ProcUtilResult {
     proc.write_all("1".as_bytes())
         .map_err(ProcUtilError::Stm32WakeErr)?;
 
-    debug!("Wait a little while....");
+    trace!("Wait a little while....");
     thread::sleep(Duration::from_secs(2));
 
     proc.write_all("0".as_bytes())
@@ -91,7 +91,7 @@ pub fn stm32_wake() -> ProcUtilResult {
 ///
 /// Likewise, if `in_out` is `false`, then it'll flip the GPIO pins the other way to reboot to
 /// 'user mode' of the STM32 firmware.
-pub fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
+pub(crate) fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
     trace!("Open fd for STM32 reset proc");
 
     let mut proc = open_proc_file(AEON_STM32_DL_FW_PROC)?;
