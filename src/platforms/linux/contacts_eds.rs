@@ -9,13 +9,13 @@ use zbus::blocking::{Connection, Proxy};
 use zbus::Error as ZbusError;
 
 #[derive(Clone, Debug)]
-pub(crate) struct CoDiContactNumber {
+pub struct CoDiContactNumber {
     phone_type: String,
     number: String,
 }
 
 impl CoDiContactNumber {
-    pub(crate) fn get_phone_type(&self) -> Option<String> {
+    pub fn get_phone_type(&self) -> Option<String> {
         if self.phone_type.is_empty() {
             return None;
         }
@@ -23,7 +23,7 @@ impl CoDiContactNumber {
         Some(String::from(&self.phone_type))
     }
 
-    pub(crate) fn get_phone_number(&self) -> Option<String> {
+    pub fn get_phone_number(&self) -> Option<String> {
         if self.number.is_empty() {
             return None;
         }
@@ -33,13 +33,13 @@ impl CoDiContactNumber {
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct CoDiContact {
+pub struct CoDiContact {
     name: String,
     phone: CoDiContactNumbers,
 }
 
 impl CoDiContact {
-    pub(crate) fn get_contact_name(&self) -> Option<String> {
+    pub fn get_contact_name(&self) -> Option<String> {
         if self.name.is_empty() {
             return None;
         }
@@ -47,7 +47,7 @@ impl CoDiContact {
         Some(String::from(&self.name))
     }
 
-    pub(crate) fn get_numbers(&self) -> Option<CoDiContactNumbers> {
+    pub fn get_numbers(&self) -> Option<CoDiContactNumbers> {
         if self.phone.is_empty() {
             return None;
         }
@@ -57,7 +57,7 @@ impl CoDiContact {
 }
 
 #[derive(Debug, Error, PartialEq)]
-pub(crate) enum DbusContactsError {
+pub enum DbusContactsError {
     #[error("Failed to connect to the D-Bus User Session bus.")]
     SessionBusConnectFailure(#[source] ZbusError),
     #[error("Error retrieving D-Bus activatable interfaces.")]
@@ -74,14 +74,14 @@ pub(crate) enum DbusContactsError {
     GetContactFailure(#[source] ZbusError),
 }
 
-pub(crate) type CoDiContacts = Vec<CoDiContact>;
-pub(crate) type CoDiContactNumbers = Vec<CoDiContactNumber>;
-pub(crate) type CoDiDbusContactsResult<
+pub type CoDiContacts = Vec<CoDiContact>;
+pub type CoDiContactNumbers = Vec<CoDiContactNumber>;
+pub type CoDiDbusContactsResult<
     T = CoDiContacts,
     E = DbusContactsError,
 > = anyhow::Result<T, E>;
 
-pub(crate) fn get_dbus_contacts() -> CoDiDbusContactsResult {
+pub fn get_dbus_contacts() -> CoDiDbusContactsResult {
     let bus = Connection::session()
         .map_err(|e| DbusContactsError::SessionBusConnectFailure(e))?;
 

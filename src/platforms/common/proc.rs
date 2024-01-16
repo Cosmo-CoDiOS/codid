@@ -11,7 +11,7 @@ use std::time::Duration;
 /// `ProcUtilError` is an enum of different `Error` types and reasons.
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug, thiserror::Error)]
-pub(crate) enum ProcUtilError {
+pub enum ProcUtilError {
     /// `Stm32ResetErr` is an error returned when we're unable to write to the 'special file' for
     /// rebooting the STM32.
     #[error("Unable to reset the STM32.")]
@@ -35,14 +35,14 @@ pub(crate) enum ProcUtilError {
 
 /// `ProcUtilResult` acts as an abstraction over `anyhow` and `thiserror`, used for handling errors
 /// produced by the `crate::platforms::common::proc` module.
-pub(crate) type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
+pub type ProcUtilResult = anyhow::Result<(), ProcUtilError>;
 
 const AEON_RESET_STM32_PROC: &str = "/proc/AEON_RESET_STM32";
 const AEON_STM32_DL_FW_PROC: &str = "/proc/AEON_STM32_DL_FW";
 const AEON_WAKE_STM32_PROC: &str = "/proc/AEON_WAKE_STM32";
 
 /// `stm32_reset` resets the STM32.
-pub(crate) fn stm32_reset() -> ProcUtilResult {
+pub fn stm32_reset() -> ProcUtilResult {
     info!("Resetting CoDi...");
 
     trace!("Open fd for STM32 reset proc");
@@ -68,7 +68,7 @@ pub(crate) fn stm32_reset() -> ProcUtilResult {
 }
 
 /// `stm32_wake` wakes up the STM32 via the IRQ GPIO pins.
-pub(crate) fn stm32_wake() -> ProcUtilResult {
+pub fn stm32_wake() -> ProcUtilResult {
     info!("Waking CoDi...");
 
     let mut proc = open_proc_file(AEON_WAKE_STM32_PROC)?;
@@ -91,7 +91,7 @@ pub(crate) fn stm32_wake() -> ProcUtilResult {
 ///
 /// Likewise, if `in_out` is `false`, then it'll flip the GPIO pins the other way to reboot to
 /// 'user mode' of the STM32 firmware.
-pub(crate) fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
+pub fn stm32_bootloader_dl(in_out: bool) -> ProcUtilResult {
     trace!("Open fd for STM32 reset proc");
 
     let mut proc = open_proc_file(AEON_STM32_DL_FW_PROC)?;

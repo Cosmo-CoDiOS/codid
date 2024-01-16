@@ -22,7 +22,7 @@ pub enum ControlLoopError {
 
 pub type ControlLoopResult<T, E = ControlLoopError> = Result<T, E>;
 
-pub(crate) async fn enter_control_loop(_s: &State) -> ControlLoopResult<()> {
+pub async fn enter_control_loop(_s: &State) -> ControlLoopResult<()> {
     debug!("Entering command loop...");
 
     future::ok(()).await

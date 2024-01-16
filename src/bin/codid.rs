@@ -37,7 +37,7 @@ const SYSTEM_CONF_DEF_PATH: &str = "/etc/cosmo-codios/codid/config.toml";
 
 mod errors {
     #[derive(Debug, thiserror::Error)]
-    pub(crate) enum ConfigError {
+    pub enum ConfigError {
         #[error("Config path does not exist.")]
         ConfigPathNonExistent,
         #[error("General configuration error.")]
@@ -45,7 +45,7 @@ mod errors {
     }
 
     #[derive(Debug, thiserror::Error)]
-    pub(crate) enum ArgsError {
+    pub enum ArgsError {
         #[error("Could not get config path from Clap, including default")]
         ArgConfigPathGetError(#[source] clap::parser::MatchesError),
     }
