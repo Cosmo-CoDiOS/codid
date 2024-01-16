@@ -22,7 +22,7 @@ use std::sync::Mutex;
 
 // check for CoDiOS or stock CoDi feature enablement
 #[cfg(not(any(feature = "stock-codi", feature = "codios-codi")))]
-compile_error!("ONE variant of CoDi required as a feature, please respecify!");
+compile_error!("At least ONE supported CoDi variant required as a feature, please specify!");
 
 // check for at least one ROM target
 #[cfg(not(any(
@@ -35,7 +35,7 @@ compile_error!("ONE variant of CoDi required as a feature, please respecify!");
     feature = "nixos"
 )))]
 compile_error!(
-    "At least ONE Cosmo ROM is required as a feature, please specify!"
+    "At least ONE supported ROM is required as a feature, please specify!"
 );
 
 #[cfg(not(any(target_arch = "aarch64", target_arch = "x86_64")))]
