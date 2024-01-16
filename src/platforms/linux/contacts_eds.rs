@@ -1,7 +1,5 @@
 //! `contacts_eds` gets contacts from Evolution's EDS interface, for inserting into CoDi over UART.
 
-#![allow(dead_code)]
-
 use std::io::BufReader;
 
 use thiserror::Error;

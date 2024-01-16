@@ -1,7 +1,6 @@
 //! Modules for interfacing with the `/proc` FS special files provided by the Cosmo Linux kernel.
-#![allow(dead_code)]
 
-use log::{debug, info, trace};
+use log::{info, trace};
 use std::fs;
 use std::fs::File;
 use std::io::{self, Write};

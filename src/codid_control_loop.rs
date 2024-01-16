@@ -1,5 +1,4 @@
-//! Control loop managed by Tokio for controlling the CoDi daemon.
-#![allow(dead_code)]
+//! Control loop managed by Tokio for interacting with `codid`.
 
 use crate::State;
 
