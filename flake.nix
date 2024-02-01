@@ -30,18 +30,25 @@
           rustc = toolchain;
         };
 
-      in {
+      in
+      {
         # For `nix build` & `nix run`:
-        defaultPackage = naersk'.buildPackage {
+        packages.codid = naersk'.buildPackage {
           src = ./.;
-          nativeBuildInputs = with pkgs; [ pkg-config cmake ] ;
+          nativeBuildInputs = with pkgs; [ pkg-config cmake ];
           buildInputs = with pkgs; [ systemd.dev dbus.dev protobuf protobufc ];
         };
 
+        packages.default = self.outputs.packages.${system}.codid;
+
         # For `nix develop` (optional, can be skipped):
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           nativeBuildInputs = [ toolchain ] ++ (with pkgs; [ rustc cargo pkg-config cmake ]);
           buildInputs = with pkgs; [ systemd.dev dbus.dev protobuf protobufc ];
+        };
+      } // {
+        overlays.default = final: prev: {
+          inherit (self.packages.${final.system}) codid;
         };
       }
     );
