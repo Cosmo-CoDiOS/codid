@@ -46,7 +46,6 @@
           nativeBuildInputs = [ toolchain ] ++ (with pkgs; [ rustc cargo pkg-config cmake ]);
           buildInputs = with pkgs; [ systemd.dev dbus.dev protobuf protobufc ];
         };
-      } // {
         overlays.default = final: prev: {
           inherit (self.packages.${final.system}) codid;
         };
