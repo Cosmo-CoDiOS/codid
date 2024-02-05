@@ -29,7 +29,7 @@ jobs:
           profile: minimal
       - name: Install Cross
         if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: brndnmtthws/rust-action-cargo-binstall@v1.0.1
+        uses: brndnmtthws/rust-action-cargo-binstall@v1.1.0
         with:
           packages: cross
       - name: Build nightly for Android
