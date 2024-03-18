@@ -1,10 +1,8 @@
 //! Control loop managed by Tokio for interacting with `codid`.
 
-use crate::State;
-
 use anyhow::Result;
-use futures::future;
 use thiserror::Error;
+use crate::{State, observer::Observer};
 
 /// `ControlLoopError` is an enum of different `Error` variants, backed by `anyhow` and `thiserror`.
 #[allow(clippy::enum_variant_names)]
@@ -21,8 +19,8 @@ pub enum ControlLoopError {
 
 pub type ControlLoopResult<T, E = ControlLoopError> = Result<T, E>;
 
-pub async fn enter_control_loop(_s: &State) -> ControlLoopResult<()> {
-    debug!("Entering command loop...");
+pub fn enter_control_loop() -> ControlLoopResult<()> {
+    let observer = Observer::new();
 
-    future::ok(()).await
+    Ok(())
 }
