@@ -2,6 +2,7 @@
 name = "codid"
 publish = false
 license = "MIT"
+rust-version = "1.76.0"
 readme = "README.md"
 repository = "https://github.com/Cosmo-CoDiOS/codid"
 description = "Rust implementation of the CoDi interface for Linux and Android based ROMs"
