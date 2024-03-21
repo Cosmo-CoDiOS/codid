@@ -17,7 +17,7 @@ rustPlatform.buildRustPackage {
     "--features=stock-codi,codios-codi,nixos"
   ];
 
-  nativeBuildInputs = with pkgs; [ pkg-config ];
+  nativeBuildInputs = with pkgs; [ pkg-config protobuf ];
   buildInputs = with pkgs; [ systemd.dev ];
 
   meta = with lib; {
