@@ -1,54 +1,40 @@
 {
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:nix-community/naersk";
-
-    nixpkgs-mozilla = {
-      url = "github:mozilla/nixpkgs-mozilla";
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
       flake = false;
     };
   };
-
-  outputs = { self, flake-utils, naersk, nixpkgs, nixpkgs-mozilla }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    { self
+    , nixpkgs
+    , flake-utils
+    , ...
+    }:
+    flake-utils.lib.eachDefaultSystem
+      (system:
       let
-        pkgs = (import nixpkgs) {
-          inherit system;
-
-          overlays = [
-            (import nixpkgs-mozilla)
-          ];
-        };
-
-        toolchain = (pkgs.rustChannelOf {
-          rustToolchain = ./rust-toolchain;
-          sha256 = "sha256-e4mlaJehWBymYxJGgnbuCObVlqMlQSilZ8FljG9zPHY=";
-        }).rust;
-
-        naersk' = pkgs.callPackage naersk {
-          cargo = toolchain;
-          rustc = toolchain;
-        };
-
+        pkgs = nixpkgs.outputs.legacyPackages.${system};
       in
       {
-        # For `nix build` & `nix run`:
-        packages.codid = naersk'.buildPackage {
-          src = ./.;
-          nativeBuildInputs = with pkgs; [ pkg-config cmake ];
-          buildInputs = with pkgs; [ systemd.dev dbus.dev protobuf protobufc ];
-        };
-
+        packages.codid = pkgs.callPackage ./codid.nix { };
         packages.default = self.outputs.packages.${system}.codid;
 
-        # For `nix develop` (optional, can be skipped):
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = [ toolchain ] ++ (with pkgs; [ rustc cargo pkg-config cmake ]);
-          buildInputs = with pkgs; [ systemd.dev dbus.dev protobuf protobufc ];
-        };
-      }) // {
-        overlays.default = final: prev: {
-          inherit (self.packages.${final.system}) codid;
-        };
+        devShells.default = self.packages.${system}.default.overrideAttrs (super: {
+          nativeBuildInputs = with pkgs;
+            super.nativeBuildInputs
+            ++ [
+              clippy
+              rustfmt
+            ];
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+        });
+      })
+    // {
+      overlays.default = final: prev: {
+        inherit (self.packages.${final.system}) codid;
+      };
     };
 }
