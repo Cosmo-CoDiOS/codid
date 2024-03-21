@@ -495,7 +495,7 @@ dependencies = [
  "anyhow",
  "codi_protocol_common",
  "core2",
- "structure 0.1.2 (git+https://github.com/liranringel/structure)",
+ "structure",
  "thiserror-no-std",
 ]
 
@@ -518,7 +518,6 @@ dependencies = [
  "lazy_static",
  "log",
  "rustix",
- "structure 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "tokio",
  "tonic",
@@ -1907,32 +1906,11 @@ checksum = "5ee073c9e4cd00e28217186dbe12796d692868f432bf2e97ee73bed0c56dfa01"
 [[package]]
 name = "structure"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8379aeb9cf8935b018b14d9191b15096e984ad8b77424b9bce075ea15d1fa59"
-dependencies = [
- "byteorder",
- "proc-macro-hack",
- "structure-macro-impl 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "structure"
-version = "0.1.2"
 source = "git+https://github.com/liranringel/structure#216583f992a08075498c6e99d3134d46969b9046"
 dependencies = [
  "byteorder",
  "proc-macro-hack",
- "structure-macro-impl 0.1.2 (git+https://github.com/liranringel/structure)",
-]
-
-[[package]]
-name = "structure-macro-impl"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0c0529f2429c8bb5878688fffab7f700087f4bd47906e6acf03fd7361f77aca"
-dependencies = [
- "proc-macro-hack",
- "quote 0.3.15",
+ "structure-macro-impl",
 ]
 
 [[package]]
