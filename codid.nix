@@ -13,6 +13,10 @@ rustPlatform.buildRustPackage {
     allowBuiltinFetchGit = true;
   };
 
+  cargoBuildFlags = [
+    "--features=stock-codi,codios-codi,nixos"
+  ];
+
   nativeBuildInputs = with pkgs; [ pkg-config ];
   buildInputs = with pkgs; [ systemd.dev ];
 
