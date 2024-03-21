@@ -16,5 +16,5 @@ jobs:
     secrets: inherit
 
   test-nix:
-    uses: /.github/workflows/ci-tests-nix.yml
+    uses: ./.github/workflows/ci-tests-nix.yml
     secrets: inherit
