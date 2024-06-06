@@ -1,8 +1,8 @@
 [target.aarch64-unknown-linux-musl]
-image = "ghcr.io/shymega/planet-build-system-containers:latest-cosmo-codid-cargo-aarch64-unknown-linux-musl"
+image = "ghcr.io/planet-community/planet-build-system-containers:latest-cosmo-codid-cargo-aarch64-unknown-linux-musl"
 
 [target.x86_64-unknown-linux-musl]
-image = "ghcr.io/shymega/planet-build-system-containers:latest-cosmo-codid-cargo-x86_64-unknown-linux-musl"
+image = "ghcr.io/planet-community/planet-build-system-containers:latest-cosmo-codid-cargo-x86_64-unknown-linux-musl"
 
 [target.aarch64-linux-android]
-image = "ghcr.io/shymega/planet-build-system-containers:latest-cosmo-codid-cargo-aarch64-linux-android"
+image = "ghcr.io/planet-community/planet-build-system-containers:latest-cosmo-codid-cargo-aarch64-linux-android"
