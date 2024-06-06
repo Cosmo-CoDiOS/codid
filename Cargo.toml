@@ -44,19 +44,19 @@ nixos = ["linux"]
 [dependencies]
 futures = "0.3.30"
 config = "0.14.0"
-clap = { version = "4.5.3", features = ["string", "color"] }
+clap = { version = "4.5.4", features = ["string", "color"] }
 log = { version = "0.4.21" }
 env_logger = "0.11.3"
 lazy_static = "1.4.0"
 dirs = "5.0.1"
-thiserror = "1.0.58"
-anyhow = "1.0.81"
-zvariant = { version = "4.0.2", optional = true }
-zbus = { version = "4.1.2", optional = true }
-tokio = { version = "1.36.0", features = ["fs", "io-util", "io-std", "rt", "process", "rt-multi-thread", "signal", "sync", "time"] }
+thiserror = "1.0.61"
+anyhow = "1.0.86"
+zvariant = { version = "4.1.1", optional = true }
+zbus = { version = "4.2.2", optional = true }
+tokio = { version = "1.38.0", features = ["fs", "io-util", "io-std", "rt", "process", "rt-multi-thread", "signal", "sync", "time"] }
 ical = { version = "0.11.0", optional = true }
 tonic = "0.11.0"
-rustix = "0.38.31"
+rustix = "0.38.34"
 
 [dependencies.codi_os_protocol]
 git = "https://github.com/Cosmo-CoDiOS/codi_protocols"
