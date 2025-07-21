@@ -1,7 +1,7 @@
-{ lib
-, pkgs ? import <nixpkgs>
-, rustPlatform
-,
+{
+  lib,
+  pkgs,
+  rustPlatform,
 }:
 rustPlatform.buildRustPackage {
   name = "codid";
@@ -17,11 +17,10 @@ rustPlatform.buildRustPackage {
     "--features=stock-codi,codios-codi,nixos"
   ];
 
-  nativeBuildInputs = with pkgs; [ pkg-config protobuf ];
-  buildInputs = with pkgs; [ systemd.dev ];
+  nativeBuildInputs = with pkgs; [pkg-config protobuf];
+  buildInputs = with pkgs; [systemd.dev];
 
   meta = with lib; {
-    description = "";
     homepage = "https://github.com/Cosmo-CoDiOS/codid";
     license = licenses.mit;
   };
